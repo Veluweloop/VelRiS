@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html> 
+
+    <head>
+        <meta name = "viewport" content = "width = device-width, initial-scale = 1">     
+        <link rel="stylesheet" media="screen" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+
+    </head>
+    <body>
+        <div class="container-fluid">
+        {% include "navbar.html" %}
+        <div class="row">
+            <div class="col-lg-4 col-md-12 col-sm-12">
+                <h2>Meldingen CP<h/2>
+            </div>
+            <div class="col-lg-4 col-md-12 col-sm-12">
+                <h2>Status systeem</h2>
+                <p> ID: {{serialid}} </p>
+                <p> Wisselpuntploeg: {{checkpointteam_name}} </p>
+                <p> Wisselpunt: {{ current_checkpoint }} </p>
+                <p> aantal registartie: x / Y </p>
+                
+            </div>
+            <div class="col-lg-4 col-md-12 col-sm-12">
+                <h2>Laatste doorkomsten</h2>
+                {% for reg in Doorkomst_top10 %}
+                    <p>{{ reg.ploeg }}    {{ reg.tijd }} </p>
+                {% endfor %}
+                
+                <p>&lt;leuk om te spelen&gt;</p>
+                <h3> Alle wisselpunten </h3>
+                {% for wisselpunt in WP %}
+                    <p>{{ wisselpunt.checkpoint_name }} </p>
+                {% endfor %}
+                
+            </div>
+        </div>
+        </div>
+    </body>
+    
+<script type = "text/javascript" src="{{ url_for('static', filename='jquery-3.5.1.min.js') }}"></script>
+<script type = "text/javascript" src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
+
+</html>
+ 
+
+ 
+
+ 

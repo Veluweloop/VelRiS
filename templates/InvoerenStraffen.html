@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html> 
+
+    <head>
+        <meta name = "viewport" content = "width = device-width, initial-scale = 1">     
+        <link rel="stylesheet" media="screen" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+
+    </head>
+    <body>
+        <div class="container-fluid">
+            {% include "navbar.html" %}
+            <form method="POST">
+                <div class="row">
+                
+                    <div class="col-12 col-md-6">
+                        
+                        <h1> Invoeren straffen </h1>
+                        
+                        <div class="row">
+                            <div class="col-8">
+                                <input type="number" class="form-control" required id="team_insert" name="team_insert"/>
+                            </div>
+                            <div class="col-4">
+                                <input class=" btn-lg btn-block" type="button" value="CANCEL" onclick="function_cancel()">
+                            </div>
+                        </div>
+                    
+                        <hr>
+                    
+                        <div class="row">
+                
+                            <div class="col-12">
+                                <div class="row">
+                                    <div class="col-4">
+                                        <input class=" btn-lg btn-block" type="button" value="1" onclick="function_insertnumber(this.value)">
+                                    </div>
+                                    <div class="col-4">
+                                        <input class=" btn-lg btn-block" type="button" value="2" onclick="function_insertnumber(this.value)">
+                                    </div>
+                                    <div class="col-4">
+                                        <input class=" btn-lg btn-block" type="button" value="3" onclick="function_insertnumber(this.value)">
+                                    </div>
+                                </div>
+                        
+                                <br>
+                        
+                                <div class="row">
+                                    <div class="col-4">
+                                        <input class=" btn-lg btn-block" type="button" value="4" onclick="function_insertnumber(this.value)">
+                                    </div>
+                                    <div class="col-4">
+                                        <input class=" btn-lg btn-block" type="button" value="5" onclick="function_insertnumber(this.value)">
+                                    </div>
+                                    <div class="col-4">
+                                        <input class=" btn-lg btn-block" type="button" value="6" onclick="function_insertnumber(this.value)">
+                                    </div>
+                                </div>
+                        
+                                <br>
+                        
+                                <div class="row">
+                                    <div class="col-4">
+                                        <input class=" btn-lg btn-block" type="button" value="7" onclick="function_insertnumber(this.value)">
+                                    </div>
+                                    <div class="col-4">
+                                        <input class=" btn-lg btn-block" type="button" value="8" onclick="function_insertnumber(this.value)">
+                                    </div>
+                                    <div class="col-4">
+                                        <input class=" btn-lg btn-block" type="button" value="9" onclick="function_insertnumber(this.value)">
+                                    </div>
+                                </div>
+                        
+                                <br>
+                        
+                                <div class="row">
+                                    <div class="col-4">
+                    
+                                    </div>
+                                    <div class="col-4">
+                                        <input class=" btn-lg btn-block" type="button" value="0" onclick="function_insertnumber(this.value)">
+                                    </div>
+                                    <div class="col-4">
+                        
+                                    </div>
+                                </div>
+                        
+                                <hr>
+                        
+                                <div class="row">
+                                    <div class="col-4">
+                                        <button class=" btn-lg btn-block" type="submit" name = "enter" value="straf 1">
+                                            straf 100
+                                        </button>
+                                    </div>
+                                    <div class="col-4">
+                                        <button class=" btn-lg btn-block" type="submit" name = "enter" value="straf 2">
+                                            straf 200
+                                        </button>
+                                    </div>
+                                    <div class="col-4">
+                                        <button class=" btn-lg btn-block" type="submit" name = "enter" value="straf 3">
+                                            straf 300
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <br>
+                                
+                                <div class="row">
+                                    <div class="col-4">
+                                        <button class=" btn-lg btn-block" type="submit" name = "enter" value="straf 4">
+                                            straf 400
+                                        </button>
+                                    </div>
+                                    <div class="col-4">
+                                        <button class=" btn-lg btn-block" type="submit" name = "enter" value="straf 5">
+                                            straf 500
+                                        </button>
+                                    </div>
+                                    <div class="col-4">
+                                        <button class=" btn-lg btn-block" type="submit" name = "enter" value="straf 6">
+                                            straf 600
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <br>
+                                
+                            </div>
+                        </div>
+                    
+                    </div>
+                    
+                    <div class="col-12 col-md-6">
+                        
+                        <h1> Invoeren opmerkingen </h1>
+                    
+                        <textarea class="form-control" id="remark_insert" name="remark_insert" rows="8"></textarea>
+                        
+                        <br>
+                        
+                        <button class=" btn-lg btn-block" type="submit" name = "enter" id = "enter" value="NaN">
+                            ENTER
+                        </button>
+                        
+                        <br>
+                    
+                    </div>
+                    
+                </div>
+            </form>
+        </div>
+    </body>
+    
+<script type = "text/javascript" src="{{ url_for('static', filename='jquery-3.5.1.min.js') }}"></script>
+<script type = "text/javascript" src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
+
+<script>
+    
+    function function_cancel() {
+        document.getElementById("team_insert").value = "";
+        }
+    
+    function function_insertnumber(number) {
+        document.getElementById("team_insert").value = document.getElementById("team_insert").value + number;
+        }
+
+</script>
+</html>
