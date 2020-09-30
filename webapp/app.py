@@ -108,6 +108,22 @@ def invoeren_doorkomst():
         if request.form.get("team_insert") != "":
             ploeg = request.form.get("team_insert")
         
+        #send data to webserver
+        API_ENDPOINT = "https://httpbin.org/post"
+                
+        data_json = {
+            'ploeg':ploeg,
+            'tijd':now,
+            'type':"MANUAL",
+            'locatie':instellingen_db.wisselpunt                    
+            }
+                
+        r = requests.post(url = API_ENDPOINT, data = data_json)
+                
+        pastebin_url = r.text
+        print("The pastebin URL is:%s"%pastebin_url)
+        
+        #save data locally
         new_record = Doorkomst(tijd = now, ploeg = ploeg, type = 'handmatig', wisselpunt = instellingen_db.wisselpunt, wisselpuntploeg = instellingen_db.wisselpuntploeg, serialid = instellingen_db.serialid)
             
         db.session.add(new_record)
