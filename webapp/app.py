@@ -104,7 +104,7 @@ def index():
         "current_checkpoint" : instellingen_db.wisselpunt,
         "count" : Checkpoint.query.count(),
         "WP" : Checkpoint.query.all(),
-        "Doorkomst_top10" : Doorkomst.query.order_by(Doorkomst.tijd.desc()).limit(10).all()
+        #"Doorkomst_top10" : Doorkomst.query.order_by(Doorkomst.tijd.desc()).limit(10).all()
         }
     
     return render_template("index.html", **templateData)
@@ -116,7 +116,7 @@ def invoeren_doorkomst():
     timeString = now.strftime("%Y-%m-%d %H:%M:%S")
     templateData = {
         "title" : "Invoeren Doorkomst",
-        "Doorkomst_top10" : Doorkomst.query.order_by(Doorkomst.tijd.desc()).limit(10).all()
+        #"Doorkomst_top10" : Doorkomst.query.order_by(Doorkomst.tijd.desc()).limit(10).all()
         }
     
     if request.form.get("team_insert") != None:
