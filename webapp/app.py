@@ -2,6 +2,7 @@ from flask import Flask
 from flask import render_template
 from flask import request
 from flask_sqlalchemy import SQLAlchemy
+import requests
 
 import threading
 
@@ -70,6 +71,23 @@ def getserial():
 
 serialid = getserial()
 
+def JSON_POST(ploeg, tijd, bron, locatie):
+
+    API_ENDPOINT = "https://httpbin.org/post"
+                
+    data_json = {
+        'ploeg':ploeg,
+        'tijd':tijd,
+        'type':bron,
+        'locatie':locatie                    
+        }
+                
+    r = requests.post(url = API_ENDPOINT, data = data_json)
+                
+    pastebin_url = r.text
+    print("The pastebin URL is:%s"%pastebin_url)
+
+
 @app.route("/")
 def index():
     instellingen_db = Instellingen.query.filter_by(serialid = serialid).order_by(Instellingen.id.desc()).first()
@@ -108,7 +126,11 @@ def invoeren_doorkomst():
         if request.form.get("team_insert") != "":
             ploeg = request.form.get("team_insert")
         
-        new_record = Doorkomst(tijd = now, ploeg = ploeg, type = 'handmatig', wisselpunt = instellingen_db.wisselpunt, wisselpuntploeg = instellingen_db.wisselpuntploeg, serialid = instellingen_db.serialid)
+        #send data to webserver
+        JSON_POST(ploeg, now, "MANUAL", instellingen_db.wisselpunt)
+        
+        #save data locally 
+        new_record = Doorkomst(tijd = now, ploeg = ploeg, type = 'MANUAL', wisselpunt = instellingen_db.wisselpunt, wisselpuntploeg = instellingen_db.wisselpuntploeg, serialid = instellingen_db.serialid)
             
         db.session.add(new_record)
         db.session.commit()
@@ -249,7 +271,13 @@ def Thread3():
                 else:
                     ploeg_input = tagTOploeg.ploeg
             
-                new_record = Doorkomst(tijd = now, ploeg = ploeg_input, type = 'transponder', wisselpunt = instellingen_db.wisselpunt, wisselpuntploeg = instellingen_db.wisselpuntploeg, serialid = instellingen_db.serialid)
+                
+                #send data tro database
+                JSON_POST(ploeg_input, now, "AUTO", instellingen_db.wisselpunt)
+                
+                
+                #save data locally
+                new_record = Doorkomst(tijd = now, ploeg = ploeg_input, type = 'AUTO', wisselpunt = instellingen_db.wisselpunt, wisselpuntploeg = instellingen_db.wisselpuntploeg, serialid = instellingen_db.serialid)
                         
                 db.session.add(new_record)
                 db.session.commit()
