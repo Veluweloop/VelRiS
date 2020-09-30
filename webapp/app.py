@@ -91,8 +91,6 @@ def JSON_POST(ploeg, tijd, bron, locatie):
 @app.route("/")
 def index():
     instellingen_db = Instellingen.query.filter_by(serialid = serialid).order_by(Instellingen.id.desc()).first()
-    # print(instellingen_db)
-    # print(serialid)
     
     checkpointteam_name = instellingen_db.wisselpuntploeg
     now = datetime.datetime.now()
@@ -140,9 +138,7 @@ def invoeren_doorkomst():
 @app.route("/Instellingen/", methods=["GET", "POST"])
 def instellingen():
     instellingen_db = Instellingen.query.filter_by(serialid = serialid).order_by(Instellingen.id.desc()).first()
-    # print(instellingen_db)
-    # print(serialid)
-    
+        
     now = datetime.datetime.now()
     timeString = now.strftime("%Y-%m-%d %H:%M:%S")
     checkpointteam_name = instellingen_db.wisselpuntploeg
@@ -176,11 +172,6 @@ def Thread2():
     GPIO.wait_for_edge(3, GPIO.FALLING)
     
     subprocess.call(['shutdown', '-h', 'now'], shell=False) 
-    
-    # threading.Timer(5, Thread2).start()
-    # now = datetime.datetime.now()
-    #print(now)
-    #print(serialid)
     
 # Extra Thread for read rfid
 def Thread3():
