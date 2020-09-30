@@ -248,7 +248,24 @@ def Thread3():
                     ploeg = "???"
                 else:
                     ploeg_input = tagTOploeg.ploeg
-            
+                
+                #send data tro database
+                API_ENDPOINT = "https://httpbin.org/post"
+                
+                data_json = {
+                    'ploeg':ploeg_input,
+                    'tijd':now,
+                    'type':"AUTO",
+                    'locatie':instellingen_db.wisselpunt                    
+                    }
+                
+                r = requests.post(url = API_ENDPOINT, data = data_json)
+                
+                pastebin_url = r.text
+                print("The pastebin URL is:%s"%pastebin_url)
+                
+                
+                #save data locally
                 new_record = Doorkomst(tijd = now, ploeg = ploeg_input, type = 'transponder', wisselpunt = instellingen_db.wisselpunt, wisselpuntploeg = instellingen_db.wisselpuntploeg, serialid = instellingen_db.serialid)
                         
                 db.session.add(new_record)
