@@ -112,7 +112,7 @@ def index():
 @app.route("/InvoerenDoorkomst/", methods=["GET", "POST"])
 def invoeren_doorkomst():
     instellingen_db = Instellingen.query.filter_by(serialid = serialid).order_by(Instellingen.id.desc()).first()
-    now = datetime.datetime.now()
+    now = datetime.datetime.now().astimezone().replace(microsecond=0).isoformat()
     timeString = now.strftime("%Y-%m-%d %H:%M:%S")
     templateData = {
         "title" : "Invoeren Doorkomst",
@@ -192,7 +192,7 @@ def Thread3():
             
                 result = " ".join(map(str, data[18:30]))
             
-                now = datetime.datetime.now()
+                now = datetime.datetime.now().astimezone().replace(microsecond=0).isoformat()
     
                 # print(now, " ", result)
                 # print(data)
@@ -233,4 +233,5 @@ if __name__ == "__main__":
 #     Thread2() #start the second Thread
     Thread3() #start the third Thread
     
+
 
