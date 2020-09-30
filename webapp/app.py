@@ -137,62 +137,6 @@ def invoeren_doorkomst():
     
     return render_template("InvoerenDoorkomst.html", **templateData)
 
-# @app.route("/InvoerenStraffen/", methods=["GET", "POST"])
-# def invoeren_straffen():
-#     now = datetime.datetime.now()
-#     timeString = now.strftime("%Y-%m-%d %H:%M:%S")
-#     templateData = {
-#         "title" : "Invoeren Straffen"
-#         }
-#     
-#     if request.form.get("team_insert") != None:
-#         print(request.form.get("team_insert"))
-#         print(request.form.get("remark_insert"))
-#         print(request.form.get("enter"))
-#         print(timeString)
-#     
-#     return render_template("InvoerenStraffen.html", **templateData)
-
-# @app.route("/InvoerenStart/", methods=["GET", "POST"])
-# def invoeren_start():
-#     now = datetime.datetime.now()
-#     timeString = now.strftime("%Y-%m-%d %H:%M:%S")
-#     templateData = {
-#         "title" : "Invoeren Start"
-#         }
-#     
-#     if request.form.get("bibnumber_input") != None:
-#         print(request.form.get("bibnumber_input"))
-#         print(request.form.get("starttime_input"))
-#         print(timeString)
-#     
-#     return render_template("InvoerenStart.html", **templateData)
-
-# @app.route("/HesWissel/", methods=["GET", "POST"])
-# def hes_wissel():
-#     now = datetime.datetime.now()
-#     timeString = now.strftime("%Y-%m-%d %H:%M:%S")
-#     templateData = {
-#         "title" : "Hes wissel"
-#         }
-#     
-#     if request.form.get("teamnumber_input") != None:
-#         print(request.form.get("teamnumber_input"))
-#         print(request.form.get("bibnumber_input"))
-#         print(timeString)
-#     
-#     return render_template("HesWissel.html", **templateData)
-
-# @app.route("/WijzigenDoorkomsten/")
-# def wijzigen_doorkomsten():
-#     now = datetime.datetime.now()
-#     timeString = now.strftime("%Y-%m-%d %H:%M:%S")
-#     templateData = {
-#         "title" : "Wijzigen Doorkomsten"
-#         }
-#     
-#     return render_template("WijzigenDoorkomsten.html", **templateData)
-
 @app.route("/Instellingen/", methods=["GET", "POST"])
 def instellingen():
     instellingen_db = Instellingen.query.filter_by(serialid = serialid).order_by(Instellingen.id.desc()).first()
