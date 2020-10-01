@@ -114,7 +114,6 @@ def index():
 def invoeren_doorkomst():
     instellingen_db = Instellingen.query.filter_by(serialid = serialid).order_by(Instellingen.id.desc()).first()
     now = datetime.datetime.now().astimezone().replace(microsecond=0).isoformat()
-    timeString = now.strftime("%Y-%m-%d %H:%M:%S")
     templateData = {
         "title" : "Invoeren Doorkomst",
         #"Doorkomst_top10" : Doorkomst.query.order_by(Doorkomst.tijd.desc()).limit(10).all()
