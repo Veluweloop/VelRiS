@@ -20,7 +20,7 @@ import sys
 
 app = Flask(__name__)
 
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:////home/pi/veluweloop_db_0_1.db"
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:////home/pi/veluweloop_db_0_2.db"
 db = SQLAlchemy(app)
 
 db.Model.metadata.reflect(db.engine)
@@ -40,6 +40,7 @@ class Doorkomst(db.Model):
     wisselpunt = db.Column(db.Text)
     wisselpuntploeg = db.Column(db.Text)
     serialid = db.Column(db.Text)
+    sync = db.Column(db.Text)
 
 
 class Transponder(db.Model):
@@ -212,7 +213,7 @@ def Thread3():
                 
                 
                 #save data locally
-                new_record = Doorkomst(tijd = now, ploeg = ploeg_input, type = 'AUTO', wisselpunt = instellingen_db.wisselpunt, wisselpuntploeg = instellingen_db.wisselpuntploeg, serialid = instellingen_db.serialid)
+                new_record = Doorkomst(tijd = now, ploeg = ploeg_input, type = 'AUTO', wisselpunt = instellingen_db.wisselpunt, wisselpuntploeg = instellingen_db.wisselpuntploeg, serialid = instellingen_db.serialid, sync = "0")
                         
                 db.session.add(new_record)
                 db.session.commit()
