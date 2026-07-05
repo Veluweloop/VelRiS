@@ -1,0 +1,65 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">      
+        <link rel="stylesheet" href="static/css/materialize.css">
+
+        {% if title %}
+            <title>{{ title }} - Veluweloop</title>
+        {% else %}
+            <title>Veluweloop</title>
+        {% endif %}
+    </head>
+
+    <body>
+        <div class="navbar-fixed">
+            <nav class="nav-wrapper">
+              <div class="container">
+                <a href="#" class="brand-logo">{{ title }}</a>
+                <a href="#" class="sidenav-trigger" data-target="mobile-links">
+                  <i class="material-icons">menu</i>
+                </a>
+                <ul class="right hide-on-med-and-down">
+                  <li><a href="/">Systeem status</a></li>
+                  <li><a href="/invoerendoorkomst">Invoeren doorkomst</a></li>
+                  <li><a href="/invoerenwijziging">Invoeren wijziging</a></li>
+                  <li><a href="/instellingen">Instellingen</a></li>
+                </ul>
+              </div>
+            </nav>
+          </div>
+        
+          <ul class="sidenav" id="mobile-links">
+            <li><a href="/">Systeem status</a></li>
+            <li><a href="/invoerendoorkomst">Invoeren doorkomst</a></li>
+            <li><a href="/invoerenwijziging">Invoeren wijziging</a></li>
+            <li><a href="/instellingen">Instellingen</a></li>
+          </ul>
+              
+        {% block content %}{% endblock %}
+    
+        <script src="static/js/jquery-3.6.0.js"></script>
+        <script src="static/js/materialize.js"></script>
+        <script>
+            $(document).ready(function(){
+                $('.sidenav').sidenav();
+            });
+        </script>
+        
+        <script>
+          $('.dropdown-trigger').dropdown();
+        </script>
+
+        <script>
+            $('select').formSelect();
+        </script>
+        
+        <script>
+          $(document).ready(function(){
+            $('.tabs').tabs();
+          });
+        </script>
+
+
+    </body>
+</html>

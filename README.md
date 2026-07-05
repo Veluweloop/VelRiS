@@ -1,4 +1,9 @@
 # VelRiS
-Veluweloop Tijdregistratie Systeem
 
-De eerste versie voor de tijdregistratiekist voor de Veluweloop. Wordt getest in de editie van 2020.
+Veluweloop tijdregistratiesysteem met RFID integratie en web-interface.
+
+## Gebruikershandleiding
+
+## Installeren
+test
+## Systeem vereisten

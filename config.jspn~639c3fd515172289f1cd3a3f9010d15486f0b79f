@@ -1,0 +1,101 @@
+{
+    "competition": {
+        "EVENEMENT_ID": 5,
+        "ETAPPE_VOLGNUMMER": 6,
+        "LOCATIE_ID": "Na",
+        "checkpointteam": "WPP-B",
+        "checkpointteam_list": [
+            "WPP-A",
+            "WPP-B",
+            "WPP-C",
+            "WPP-D"
+        ],
+        "checkpoint": {
+            "ETAPPE_VOLGNUMMER": 6,
+            "ETAPPE_NAAM": "Beerenberg - Emma Piramide",
+            "MAN_VROUW": "V"
+        },
+        "checkpoint_list": [
+            {
+                "ETAPPE_VOLGNUMMER": 1,
+                "ETAPPE_NAAM": "De Bongerd - Oostereng",
+                "MAN_VROUW": "M"
+            },
+            {
+                "ETAPPE_VOLGNUMMER": 2,
+                "ETAPPE_NAAM": "Oostereng - Gelderse Roos",
+                "MAN_VROUW": "M"
+            },
+            {
+                "ETAPPE_VOLGNUMMER": 3,
+                "ETAPPE_NAAM": "Gelderse Roos - De Petteflet",
+                "MAN_VROUW": "M"
+            },
+            {
+                "ETAPPE_VOLGNUMMER": 4,
+                "ETAPPE_NAAM": "De Petteflet - Vredenoord",
+                "MAN_VROUW": "V"
+            },
+            {
+                "ETAPPE_VOLGNUMMER": 5,
+                "ETAPPE_NAAM": "Vredenoord - Beerenberg",
+                "MAN_VROUW": "M"
+            },
+            {
+                "ETAPPE_VOLGNUMMER": 6,
+                "ETAPPE_NAAM": "Beerenberg - Emma Piramide",
+                "MAN_VROUW": "V"
+            },
+            {
+                "ETAPPE_VOLGNUMMER": 7,
+                "ETAPPE_NAAM": "Emma Piramide - IPC",
+                "MAN_VROUW": "M"
+            },
+            {
+                "ETAPPE_VOLGNUMMER": 8,
+                "ETAPPE_NAAM": "IPC - Vredenoord",
+                "MAN_VROUW": "M"
+            },
+            {
+                "ETAPPE_VOLGNUMMER": 9,
+                "ETAPPE_NAAM": "Vredenoord - Planken Wambuis",
+                "MAN_VROUW": "V"
+            },
+            {
+                "ETAPPE_VOLGNUMMER": 10,
+                "ETAPPE_NAAM": "Planken Wambuis - Oostereng",
+                "MAN_VROUW": "M"
+            },
+            {
+                "ETAPPE_VOLGNUMMER": 11,
+                "ETAPPE_NAAM": "Oostereng - Campus WUR",
+                "MAN_VROUW": "V"
+            },
+            {
+                "ETAPPE_VOLGNUMMER": 12,
+                "ETAPPE_NAAM": "Campus WUR - De Bongerd",
+                "MAN_VROUW": "V"
+            }
+        ]
+    },
+    "system": {
+        "id": "ERROR000000000",
+        "battery": "Na",
+        "internet": "TRUE",
+        "update_interval": 1,
+        "RFID_reader": "Na",
+        "filename_registration": "VL_doorkomst.csv",
+        "filename_RFIDtagToTeam": "RFIDtag_team.csv"
+    },
+    "database": {
+        "host": "",
+        "user": "",
+        "password": "",
+        "database": "",
+        "charset": ""
+    },
+    "log": {
+        "update_last": "Na",
+        "record_last": "Na"
+    }
+}

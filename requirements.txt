@@ -1,0 +1,4 @@
+flask
+pyusb
+requests
+pymysql

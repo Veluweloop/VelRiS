@@ -1,53 +1,42 @@
-<!DOCTYPE html>
-<html> 
+{% extends "base.html" %}
 
-    <head>
-        <meta name = "viewport" content = "width = device-width, initial-scale = 1">     
-        <link rel="stylesheet" media="screen" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+{% block content %}
+    <div class="container">
+    <h3>Instellingen</h3>
 
-    </head>
-    <body>
-        <div class="container-fluid">
-            {% include "navbar.html" %}
+    <form method="POST" id="update_instellingen">
+        <div class="input-field col s12">
             
-            <h1> Instelingen </h1>
-            <form method = "POST">
-                <div class"form-group">
-                    <label> ID: </label>
-                    <label> {{serialid}} </label>
-                </div>
+            <select id="checkpointteam" name="checkpointteam">
+                <option value='{{config_load.competition.checkpointteam}}' selected>{{config_load.competition.checkpointteam}}</option>
+                {% for Wisselpuntploeg_list_optie in config_load.competition.checkpointteam_list %}
+                    {% if Wisselpuntploeg_list_optie != config_load.competition.checkpointteam %}
+                        <option value="{{Wisselpuntploeg_list_optie}}">{{ Wisselpuntploeg_list_optie }}</option>        
+                    {% endif %}   
+                {% endfor %}    
+            </select> 
             
-                <div class"form-group">
-                    <label for = "WPP_naam"> Wisselpuntploeg </label>
-                    <input type="text" id="WPP_naam" name="WPP_naam" value={{checkpointteam_name}}>
-                </div>
-            
-            
-                <div class="form-group">
-                    <label for="checkpoint_select"> Wisselpunt </label>
-                    <select class="form-control" id="checkpoint_select" name="checkpoint_select">
-                        <option disabeld hidden selected> {{ current_checkpoint }}</option>
-                        {% for checkpoint in checkpoints %}
-                            <option>{{ checkpoint.checkpoint_name }} </option>
-                        {% endfor %}
-                    
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <input class=" btn-lg btn-block" type="submit" value="ENTER">
-                </div>
-            </form>
-            
-        </div>    
-    </body>
-    
-<script type = "text/javascript" src="{{ url_for('static', filename='jquery-3.5.1.min.js') }}"></script>
-<script type = "text/javascript" src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
+            <label>Selecteer Wisselpuntploeg</label>
 
-</html>
- 
+        </div>
 
- 
+        <div class="input-field col s12">
+            
+            <select id="checkpoint" name="checkpoint">
+                <option value="{{config_load.competition.checkpoint }}" selected>{{ config_load.competition.checkpoint.ETAPPE_VOLGNUMMER }} : {{ config_load.competition.checkpoint.ETAPPE_NAAM }}</option>
+                {% for Wisselpunt_list_optie in config_load.competition.checkpoint_list %}
+                    {% if Wisselpunt_list_optie != config_load.competition.checkpoint %}
+                    <option value="{{Wisselpunt_list_optie}}">{{ Wisselpunt_list_optie.ETAPPE_VOLGNUMMER }} : {{ Wisselpunt_list_optie.ETAPPE_NAAM }}</option>
+                    {% endif %}           
+                {% endfor %}    
+            </select> 
+            
+            <label>Selecteer Etappe</label>
 
- 
+        </div>
+
+        <button class="btn col s4 center-align" type="submit" form="update_instellingen" value="Submit">Wijzigingen opslaan</button>
+
+    </form>
+</div>
+{% endblock%}

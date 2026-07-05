@@ -1,0 +1,22 @@
+<table>
+    <tr>
+        <th>Datum/Tijd</th>
+        <th>Ploegnummer</th>
+        <th>Sync</th>
+    </tr>
+
+    {% for doorkomst in doorkomsten %}
+        <tr>
+            <td>
+                {{doorkomst[0]}}
+            </td>
+            <td>
+                {{doorkomst[2]}}
+            </td>
+            <td>
+                {{doorkomst[9]}}
+            </td>
+        </tr>
+              
+    {% endfor %}  
+</table>        

@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+  <div class="container">
+    <div class="row">      
+      <div class="row">
+        <div class="col s12">
+          <ul class="tabs">
+            <li class="tab col s3"><a class="active" href="#doorkomsten">Invoeren doorkomsten</a></li>
+            <li class="tab col s3"><a href="#straffen">Invoeren Straffen</a></li>
+          </ul>
+        </div>  
+      </div>
+    
+      <div id="doorkomsten" class="row">
+      <div class="row">
+        <h3>Handmatige invoer</h3>
+        <form method="POST" id="input_doorkomst">
+          <input type="datetime-local" step = "1" class="timepicker center-align col s8" id="time_insert" name="time_insert" required>
+          <div class ="col s4">
+            <select name="timezone" id="timezone">
+              <option value="-11:00" >UTC -11:00</option>
+              <option value="-10:00" >UTC -10:00</option>
+              <option value="-09:00" >UTC -09:00</option>
+              <option value="-08:00" >UTC -08:00</option>
+              <option value="-07:00" >UTC -07:00</option>
+              <option value="-06:00" >UTC -06:00</option>
+              <option value="-05:00" >UTC -05:00</option>
+              <option value="-04:00" >UTC -04:00</option>
+              <option value="-03:00" >UTC -03:00</option>
+              <option value="-02:00" >UTC -02:00</option>
+              <option value="-01:00" >UTC -01:00</option>
+              <option value="+00:00" >UTC +1:00</option>
+              <option value="+01:00" >UTC +01:00</option>
+              <option value="+02:00" selected>UTC +02:00</option>
+              <option value="+03:00" >UTC +03:00</option>
+              <option value="+04:00" >UTC +04:00</option>
+              <option value="+05:00" >UTC +05:00</option>
+              <option value="+06:00" >UTC +06:00</option>
+              <option value="+07:00" >UTC +07:00</option>
+              <option value="+08:00" >UTC +08:00</option>
+              <option value="+09:00" >UTC +09:00</option>
+              <option value="+10:00" >UTC +10:00</option>
+              <option value="+11:00" >UTC +11:00</option>
+              <option value="+12:00" >UTC +12:00</option>
+            </select>
+          </div>
+          <input type="number" class="form-control col s12 center-align" placeholder="Ploegnummer" id="team_insert" name="team_insert" autofocus required/>
+          <input type="hidden" id="action" name="action" value="doorkomst">
+        </form>
+      </div>
+
+      <div class="container">
+        <div class="row">
+          <button class="btn col s4 center-align" value="1" onclick="function_insertnumber(this.value)">1</button>
+          <button class="btn col s4 center-align" value="2" onclick="function_insertnumber(this.value)">2</button>
+          <button class="btn col s4 center-align" value="3" onclick="function_insertnumber(this.value)">3</button>
+        </div>
+        <div class="row">
+          <button class="btn col s4 center-align" value="4" onclick="function_insertnumber(this.value)">4</button>
+          <button class="btn col s4 center-align" value="5" onclick="function_insertnumber(this.value)">5</button>
+          <button class="btn col s4 center-align" value="6" onclick="function_insertnumber(this.value)">6</button>
+        </div>
+        <div class="row">
+          <button class="btn col s4 center-align" value="7" onclick="function_insertnumber(this.value)">7</button>
+          <button class="btn col s4 center-align" value="8" onclick="function_insertnumber(this.value)">8</button>
+          <button class="btn col s4 center-align" value="9" onclick="function_insertnumber(this.value)">9</button>
+        </div>
+        <div class="row">
+          <button class="btn col s4 center-align" onclick="function_cancel()">BACSPACE</button>
+          <button class="btn col s4 center-align" value="0" onclick="function_insertnumber(this.value)">0</button>
+          <button class="btn col s4 center-align" type="submit" form="input_doorkomst" value="Submit" onclick="showToast()">ENTER</button>
+        </div>    
+      </div>
+    </div>
+    </div>
+
+    <div id="straffen" class="row">
+      <h3>Invoeren straffen</h3>
+      <p>Her kun je de ploegen invoeren waarvoor een man op een vrouwen-etappe heeft gelopen.</p>
+
+      
+      <div class="row">
+        <form method="POST" id="input_mv">
+          <input type="number" class="form-control col s12 center-align" placeholder="Ploegnummer" id="team_insert_mv" name="team_insert_mv" autofocus/>
+          <input type="hidden" id="action" name="action" value="mv">
+        </form>
+      </div>
+  
+      <div class="container">
+        <div class="row">
+          <button class="btn col s4 center-align" value="1" onclick="function_insertnumber(this.value)">1</button>
+          <button class="btn col s4 center-align" value="2" onclick="function_insertnumber(this.value)">2</button>
+          <button class="btn col s4 center-align" value="3" onclick="function_insertnumber(this.value)">3</button>
+        </div>
+        <div class="row">
+          <button class="btn col s4 center-align" value="4" onclick="function_insertnumber(this.value)">4</button>
+          <button class="btn col s4 center-align" value="5" onclick="function_insertnumber(this.value)">5</button>
+          <button class="btn col s4 center-align" value="6" onclick="function_insertnumber(this.value)">6</button>
+        </div>
+        <div class="row">
+          <button class="btn col s4 center-align" value="7" onclick="function_insertnumber(this.value)">7</button>
+          <button class="btn col s4 center-align" value="8" onclick="function_insertnumber(this.value)">8</button>
+          <button class="btn col s4 center-align" value="9" onclick="function_insertnumber(this.value)">9</button>
+        </div>
+        <div class="row">
+          <button class="btn col s4 center-align" onclick="function_cancel()">BACSPACE</button>
+          <button class="btn col s4 center-align" value="0" onclick="function_insertnumber(this.value)">0</button>
+          <button class="btn col s4 center-align" type="submit" form="input_mv" value="Submit" onclick="showToast()">ENTER</button>
+        </div>    
+      </div>
+    </div>
+    </div>
+
+  <script>
+    function function_cancel() {
+        document.getElementById("team_insert").value = "";
+        document.getElementById("team_insert_mv").value = "";
+        }
+    
+    function function_insertnumber(number) {
+        document.getElementById("team_insert").value = document.getElementById("team_insert").value + number;
+        document.getElementById("team_insert_mv").value = document.getElementById("team_insert_mv").value + number;
+        }
+    function showToast(){
+        M.toast({html:document.getElementById("team_insert").value})
+        M.toast({html:document.getElementById("team_insert_mv").value})
+    }
+
+    $(document).ready(function(){
+      $('.timepicker').timepicker();
+    });
+</script>
+
+{% endblock%}
