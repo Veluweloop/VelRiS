@@ -12,14 +12,14 @@ import webapp.webapp #local webserver for entering manual data
 # op termijn verwijderen
 import config #import the config of the app
 
+import database_init #import the database_init of the app
+
 def on_boot():
 #    print('boot')
+    database_init.create_tables() # build database if it doesnt exist yet
     config_all = config.config_read()
     config.config_write(config_all)
 
-# def for building database of it doesnt exist yet
-def build_database():
-    pass
 
 def doorkomst_to_file(EVENEMENT_ID, etappeVolgnummer, ploegNummer, doorkomstTijd):
     
