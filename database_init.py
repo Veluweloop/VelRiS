@@ -3,6 +3,7 @@ from pathlib import Path
 
 DB_PATH = Path(__file__).with_name("Veluweloop_DB")
 
+
 def create_tables():
     # sql code nog loskoppelen van de rest van de code, zodat het makkelijker is om de database te wijzigen
     with sqlite3.connect(DB_PATH) as conn:
@@ -15,7 +16,8 @@ def create_tables():
           DATETIME TEXT NOT NULL,
           PLOEG INTEGER NOT NULL,
           ID_LOCATIE INTEGER NOT NULL,
-          STATUS TEXT NOT NULL
+          STATUS TEXT NOT NULL,
+          EVENEMENT_ID INTEGER NOT NULL DEFAULT -1
           )
         ''')
 
@@ -23,7 +25,8 @@ def create_tables():
           CREATE TABLE IF NOT EXISTS WISSELPUNTEN(
           ID INTEGER NOT NULL PRIMARY KEY,
           WISSELPUNT_NAAM TEXT NOT NULL,
-          ETAPPE_VOLGNUMMER INTEGER NOT NULL
+          ETAPPE_VOLGNUMMER INTEGER NOT NULL,
+          EVENEMENT_ID INTEGER NOT NULL DEFAULT -1
           )
       ''')
 
@@ -31,7 +34,8 @@ def create_tables():
           CREATE TABLE IF NOT EXISTS PLOEGLIJST(
           PLOEG_ID INTEGER NOT NULL PRIMARY KEY,
           PLOEGNUMMER INTEGER NOT NULL,
-          PLOEG_NAAM TEXT NOT NULL
+          PLOEG_NAAM TEXT NOT NULL,
+          EVENEMENT_ID INTEGER NOT NULL DEFAULT -1
           )
       ''')
 
@@ -41,6 +45,58 @@ def create_tables():
           EVENEMENT_NAAM TEXT NOT NULL
           )
       ''')
+
+def insert_doorkomst(datetime, ploeg, id_locatie, status, evenement_id, id_local=None, id_server=None):
+    with sqlite3.connect(DB_PATH) as conn:
+        if id_local is None:
+            conn.execute('''
+              INSERT INTO DOORKOMSTEN (ID_SERVER, DATETIME, PLOEG, ID_LOCATIE, STATUS, EVENEMENT_ID)
+              VALUES (?, ?, ?, ?, ?, ?)
+            ''', (id_server, datetime, ploeg, id_locatie, status, evenement_id))
+        else:
+            conn.execute('''
+              INSERT INTO DOORKOMSTEN (ID_LOCAL, ID_SERVER, DATETIME, PLOEG, ID_LOCATIE, STATUS, EVENEMENT_ID)
+              VALUES (?, ?, ?, ?, ?, ?, ?)
+              ON CONFLICT(ID_LOCAL) DO UPDATE SET
+                ID_SERVER = excluded.ID_SERVER,
+                DATETIME = excluded.DATETIME,
+                PLOEG = excluded.PLOEG,
+                ID_LOCATIE = excluded.ID_LOCATIE,
+                STATUS = excluded.STATUS,
+                EVENEMENT_ID = excluded.EVENEMENT_ID
+            ''', (id_local, id_server, datetime, ploeg, id_locatie, status, evenement_id))
+
+def insert_wisselpunt(wisselpunt_id, wisselpunt_naam, etappe_volgnummer, evenement_id):
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.execute('''
+          INSERT INTO WISSELPUNTEN (ID, WISSELPUNT_NAAM, ETAPPE_VOLGNUMMER, EVENEMENT_ID)
+          VALUES (?, ?, ?, ?)
+          ON CONFLICT(ID) DO UPDATE SET
+            WISSELPUNT_NAAM = excluded.WISSELPUNT_NAAM,
+            ETAPPE_VOLGNUMMER = excluded.ETAPPE_VOLGNUMMER,
+            EVENEMENT_ID = excluded.EVENEMENT_ID
+        ''', (wisselpunt_id, wisselpunt_naam, etappe_volgnummer, evenement_id))
+
+def insert_ploeg(ploeg_id, ploegnummer, ploeg_naam, evenement_id):
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.execute('''
+          INSERT INTO PLOEGLIJST (PLOEG_ID, PLOEGNUMMER, PLOEG_NAAM, EVENEMENT_ID)
+          VALUES (?, ?, ?, ?)
+          ON CONFLICT(PLOEG_ID) DO UPDATE SET
+            PLOEGNUMMER = excluded.PLOEGNUMMER,
+            PLOEG_NAAM = excluded.PLOEG_NAAM,
+            EVENEMENT_ID = excluded.EVENEMENT_ID
+        ''', (ploeg_id, ploegnummer, ploeg_naam, evenement_id))
+
+def insert_evenement(evenement_id, evenement_naam):
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.execute('''
+          INSERT INTO EVENEMENTEN (EVENEMENT_ID, EVENEMENT_NAAM)
+          VALUES (?, ?)
+          ON CONFLICT(EVENEMENT_ID) DO UPDATE SET
+            EVENEMENT_NAAM = excluded.EVENEMENT_NAAM
+        ''', (evenement_id, evenement_naam))
+
 
 def print_schema():
     conn = sqlite3.connect(DB_PATH)
