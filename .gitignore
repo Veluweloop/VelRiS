@@ -11,3 +11,6 @@ venv/
 
 # Local environment files
 .env
+
+# VS Code settings
+.vscode/
