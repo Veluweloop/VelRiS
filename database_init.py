@@ -19,7 +19,8 @@ def create_tables():
           PLOEG INTEGER NOT NULL,
           ID_LOCATIE INTEGER NOT NULL,
           STATUS TEXT NOT NULL,
-          EVENEMENT_ID INTEGER NOT NULL DEFAULT -1
+          EVENEMENT_ID INTEGER NOT NULL DEFAULT -1,
+          LOCAL_CHANGE INTEGER NOT NULL DEFAULT 1
           )
         ''')
 
@@ -48,25 +49,27 @@ def create_tables():
           )
       ''')
 
-def insert_doorkomst(datetime, ploeg, id_locatie, status, evenement_id, id_local=None, id_server=None):
+def insert_doorkomst(datetime, ploeg, id_locatie, status, evenement_id, id_local=None, id_server=None, local_change=True):
     with sqlite3.connect(DB_PATH) as conn:
+        local_change_flag = 1 if local_change else 0
         if id_local is None:
             conn.execute('''
-              INSERT INTO DOORKOMSTEN (ID_SERVER, DATETIME, PLOEG, ID_LOCATIE, STATUS, EVENEMENT_ID)
-              VALUES (?, ?, ?, ?, ?, ?)
-            ''', (id_server, datetime, ploeg, id_locatie, status, evenement_id))
+              INSERT INTO DOORKOMSTEN (ID_SERVER, DATETIME, PLOEG, ID_LOCATIE, STATUS, EVENEMENT_ID, LOCAL_CHANGE)
+              VALUES (?, ?, ?, ?, ?, ?, ?)
+            ''', (id_server, datetime, ploeg, id_locatie, status, evenement_id, local_change_flag))
         else:
             conn.execute('''
-              INSERT INTO DOORKOMSTEN (ID_LOCAL, ID_SERVER, DATETIME, PLOEG, ID_LOCATIE, STATUS, EVENEMENT_ID)
-              VALUES (?, ?, ?, ?, ?, ?, ?)
+              INSERT INTO DOORKOMSTEN (ID_LOCAL, ID_SERVER, DATETIME, PLOEG, ID_LOCATIE, STATUS, EVENEMENT_ID, LOCAL_CHANGE)
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?)
               ON CONFLICT(ID_LOCAL) DO UPDATE SET
                 ID_SERVER = excluded.ID_SERVER,
                 DATETIME = excluded.DATETIME,
                 PLOEG = excluded.PLOEG,
                 ID_LOCATIE = excluded.ID_LOCATIE,
                 STATUS = excluded.STATUS,
-                EVENEMENT_ID = excluded.EVENEMENT_ID
-            ''', (id_local, id_server, datetime, ploeg, id_locatie, status, evenement_id))
+                EVENEMENT_ID = excluded.EVENEMENT_ID,
+                LOCAL_CHANGE = excluded.LOCAL_CHANGE
+            ''', (id_local, id_server, datetime, ploeg, id_locatie, status, evenement_id, local_change_flag))
 
 def insert_wisselpunt(wisselpunt_id, wisselpunt_naam, etappe_volgnummer, evenement_id):
     with sqlite3.connect(DB_PATH) as conn:

@@ -60,7 +60,6 @@ def save_data(data, source_type): #function to save data from memory to file
 def flaskThread(): #function to start local webserver
     webapp.webapp.app.run(host="0.0.0.0", threaded=False)
 
-
 # read the buffer of the RFID class
 def bufferloop_thread():  
     while True: #start endless loop
