@@ -4,6 +4,7 @@ Veluweloop_DB
 # Python cache
 __pycache__/
 *.py[cod]
+*.pyc
 
 # Virtual environments
 .venv/
