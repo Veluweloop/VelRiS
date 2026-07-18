@@ -1,7 +1,9 @@
+import csv
 import sqlite3
 from pathlib import Path
 
 DB_PATH = Path(__file__).with_name("Veluweloop_DB")
+EXPORT_DIR = Path(__file__).with_name("exports")
 
 
 def create_tables():
@@ -109,7 +111,34 @@ def print_schema():
             print(cur.execute(f"PRAGMA table_info({t})").fetchall())
     finally:
         conn.close()
-    
+
+def export_all_tables_to_csv(output_dir=None):
+    if output_dir is None:
+        output_dir = EXPORT_DIR
+
+    output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    conn = sqlite3.connect(DB_PATH)
+    try:
+        cur = conn.cursor()
+        tables = [r[0] for r in cur.execute("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name")]
+
+        for table_name in tables:
+            rows = cur.execute(f"SELECT * FROM {table_name}").fetchall()
+            columns = [col[1] for col in cur.execute(f"PRAGMA table_info({table_name})")]
+
+            csv_path = output_dir / f"{table_name.lower()}.csv"
+            with csv_path.open("w", newline="", encoding="utf-8") as csv_file:
+                writer = csv.writer(csv_file)
+                writer.writerow(columns)
+                writer.writerows(rows)
+
+            print(f"Exported {table_name} -> {csv_path}")
+    finally:
+        conn.close()
+
 if __name__ == "__main__":
     print_schema()
+    export_all_tables_to_csv()
 
