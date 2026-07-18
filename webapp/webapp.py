@@ -1,11 +1,13 @@
 from flask import Flask, render_template, request
 from flask.config import Config 
-import config #import the config of the app
-import main #import the main.py file
 import datetime
 import time
 import ast
 import csv
+
+import helper_database #import the database_init of the app
+import config #import the config of the app
+import main #import the main.py file
 
 app = Flask(__name__)
 
@@ -62,13 +64,17 @@ def invoerendoorkomst():
     if request.method == 'POST':
         ploegNummer = request.form['team_insert']
         datetime_current = datetime.datetime.now().astimezone().replace(microsecond=0).isoformat() #current system datetime
-# update naar database
         evenement_id = config.config_read()["competition"]["EVENEMENT_ID"]
         etappeVolgnummer = config.config_read()["competition"]["checkpoint"]["ETAPPE_VOLGNUMMER"]
         
-        # write to file
-        main.doorkomst_to_file(evenement_id, etappeVolgnummer, ploegNummer, datetime_current)
-
+        # insert doorkomt in database
+        helper_database.insert_doorkomst(
+            datetime = datetime_current, 
+            ploeg = ploegNummer, 
+            ETAPPE_VOLGNUMMER = etappeVolgnummer, 
+            status = "NA", 
+            evenement_id = evenement_id,   
+        )
 
     config_load = config.config_read()
 

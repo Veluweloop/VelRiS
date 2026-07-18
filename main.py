@@ -12,12 +12,12 @@ import webapp.webapp #local webserver for entering manual data
 # op termijn verwijderen
 import config #import the config of the app
 
-import database_init #import the database_init of the app
-import api_helper #import helpder function for api interaction with external servers
+import helper_database #import the database_init of the app
+import helper_api #import helpder function for api interaction with external servers
 
 def on_boot():
 #    print('boot')
-    database_init.create_tables() # build database if it doesnt exist yet
+    helper_database.create_tables() # build database if it doesnt exist yet
     config_all = config.config_read()
     config.config_write(config_all)
 
@@ -80,12 +80,12 @@ def bufferloop_thread():
 
         #functie voor het opvragen van alle doorkomsten van de cloud
         try:
-            api_helper.load_doorkomsten()
+            helper_api.load_doorkomsten()
         except:
             print("Failed to load doorkomsten")
 
         try:
-            api_helper.load_competitioninfo()
+            helper_api.load_competitioninfo()
         except:
             print("Failed to load competition info")
 
