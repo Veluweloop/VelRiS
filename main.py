@@ -22,9 +22,10 @@ def on_boot():
     config.config_write(config_all)
 
 
-def doorkomst_to_file(EVENEMENT_ID, etappeVolgnummer, ploegNummer, doorkomstTijd):
-    
-    pass
+
+
+
+
 
 
 
@@ -60,7 +61,8 @@ def save_data(data, source_type): #function to save data from memory to file
 def flaskThread(): #function to start local webserver
     webapp.webapp.app.run(host="0.0.0.0", threaded=False)
 
-# read the buffer of the RFID class
+
+# heeft nog een grote update nodig, wordt de functie waarin alle achtergrond taken worden uitgevoerd, zoals het uploaden van data die niet gelukt is bij de eerste poging, en het downloaden van nieuwe data van de cloud
 def bufferloop_thread():  
     while True: #start endless loop
 
@@ -78,12 +80,12 @@ def bufferloop_thread():
 
         #functie voor het opvragen van alle doorkomsten van de cloud
         try:
-            load_doorkomsten()
+            api_helper.load_doorkomsten()
         except:
             print("Failed to load doorkomsten")
 
         try:
-            load_competitioninfo()
+            api_helper.load_competitioninfo()
         except:
             print("Failed to load competition info")
 
