@@ -26,14 +26,7 @@ def doorkomst_to_file(EVENEMENT_ID, etappeVolgnummer, ploegNummer, doorkomstTijd
     
     pass
 
-#functie voor het opvragen van alle doorkomsten van de cloud
-def load_doorkomsten():
-    pass
 
-# functie voor het opvragen van de ploeglijst, etappe's
-def load_competitioninfo():
-    #ploeglijst, etappes, en meer
-    pass
 
 # dit gaan aanpassen om het direct in de database te zetten, ipv in een file
 def save_data(data, source_type): #function to save data from memory to file

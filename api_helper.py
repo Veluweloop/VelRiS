@@ -16,3 +16,12 @@ def insert_doorkomst(EVENEMENT_ID, etappeVolgnummer, ploegNummer, doorkomstTijd,
     response = requests.post(api=api, json=payload, headers=headers, timeout=10)    
 
     return(response.json())
+
+#functie voor het opvragen van alle doorkomsten van de cloud
+def load_doorkomsten():
+    pass
+
+# functie voor het opvragen van de ploeglijst, etappe's
+def load_competitioninfo():
+    #ploeglijst, etappes, en meer
+    pass
