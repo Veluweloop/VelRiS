@@ -13,6 +13,7 @@ import webapp.webapp #local webserver for entering manual data
 import config #import the config of the app
 
 import database_init #import the database_init of the app
+import api_helper #import helpder function for api interaction with external servers
 
 def on_boot():
 #    print('boot')
@@ -25,24 +26,6 @@ def doorkomst_to_file(EVENEMENT_ID, etappeVolgnummer, ploegNummer, doorkomstTijd
     
     pass
 
-# functie voor het uploaden van alle doorkomsten naar de cloud
-def insert_doorkomst(EVENEMENT_ID, etappeVolgnummer, ploegNummer, doorkomstTijd, api, api_key):
-    payload = {
-        "EVENEMENT_ID": EVENEMENT_ID,
-        "etappeVolgnummer": etappeVolgnummer,
-        "ploegNummer": ploegNummer,
-        "doorkomstTijd": doorkomstTijd
-    }
-
-    headers = {
-        "Content-Type": "application/json",
-        "X-API-Key": api_key
-    }
-
-    response = requests.post(api=api, json=payload, headers=headers, timeout=10)    
-
-    return(response.json())
-
 #functie voor het opvragen van alle doorkomsten van de cloud
 def load_doorkomsten():
     pass
@@ -52,6 +35,7 @@ def load_competitioninfo():
     #ploeglijst, etappes, en meer
     pass
 
+# dit gaan aanpassen om het direct in de database te zetten, ipv in een file
 def save_data(data, source_type): #function to save data from memory to file
     ETAPPE_VOLGNUMMER = config.config_read()["competition"]["ETAPPE_VOLGNUMMER"] #huidige etappe
     EVENEMENT_ID = config.config_read()["competition"]["EVENEMENT_ID"] #huidig evenement
