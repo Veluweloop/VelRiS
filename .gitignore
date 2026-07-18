@@ -1,0 +1,13 @@
+# Local SQLite database
+Veluweloop_DB
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+.venv/
+venv/
+
+# Local environment files
+.env
