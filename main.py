@@ -21,9 +21,11 @@ def on_boot():
     config_all = config.config_read()
     config.config_write(config_all)
 
+# ik heb hier een loop nodig die de data opvraagd vanuit de api en het wegschrijft in de database
+# de background updates gaan schedulen op basis van een cronjob
 
-
-
+def background_updates():
+    pass
 
 
 
@@ -91,6 +93,8 @@ def bufferloop_thread():
 
         time.sleep(update_interval) #wait update interval
         
+
+# threads ombouwen naar processes, zodat de webserver niet wordt geblokkeerd door de andere taken, en de andere taken niet worden geblokkeerd door de webserver
 if __name__ == '__main__':
     config.config_create() #create config file if absent
     on_boot() #action that needs to happen on boot of script
