@@ -1,6 +1,7 @@
 import requests
 
 def insert_doorkomst(EVENEMENT_ID, etappeVolgnummer, ploegNummer, doorkomstTijd, api, api_key):
+    # format for doorkomsttijd: "YYYY-MM-DDTHH:MM:SS"
     payload = {
         "EVENEMENT_ID": EVENEMENT_ID,
         "etappeVolgnummer": etappeVolgnummer,
@@ -13,15 +14,62 @@ def insert_doorkomst(EVENEMENT_ID, etappeVolgnummer, ploegNummer, doorkomstTijd,
         "X-API-Key": api_key
     }
 
-    response = requests.post(api=api, json=payload, headers=headers, timeout=10)    
+    response = requests.post(url=api, json=payload, headers=headers, timeout=10)
 
-    return(response.json())
+    print(f"[insert_doorkomst] status={response.status_code}")
+    print(response.text)
+
+    return response.json()
 
 #functie voor het opvragen van alle doorkomsten van de cloud
 def load_doorkomsten():
     pass
 
 # functie voor het opvragen van de ploeglijst, etappe's en in de databse te stoppen
-def load_competitioninfo():
-    #ploeglijst, etappes, en meer
-    pass
+def load_competitioninfo(EVENEMENT_ID, api, api_key):
+    headers = {
+        "Content-Type": "application/json",
+        "X-API-Key": api_key
+    }
+
+    response = requests.get(url=api, params={"EVENEMENT_ID": EVENEMENT_ID}, headers=headers, timeout=10)
+
+    print(f"[load_competitioninfo] status={response.status_code}")
+    print(response.text)
+
+    return response.json()
+
+if __name__ == "__main__":
+    import pprint
+
+    evenement_id = int(input("EVENEMENT_ID: "))
+    api_key = input("API_KEY: ")
+
+    print("Calling wedstrijdinfo...")
+    pprint.pp(
+        load_competitioninfo(
+            evenement_id,
+            "https://veluweloop.nl/api/wedstrijdinfo.php",
+            api_key,
+        ),
+        width=80,
+        sort_dicts=False,
+    )
+
+    etappeVolgnummer = int(input("ETAPPE_VOLGNUMMER: "))
+    ploegNummer = int(input("PLOEG_NUMMER: "))
+    doorkomstTijd = input("DOORKOMST_TIJD: ")
+
+    print("Sending doorkomst...")
+    pprint.pp(
+        insert_doorkomst(
+            evenement_id,
+            etappeVolgnummer,
+            ploegNummer,
+            doorkomstTijd,
+            "https://veluweloop.nl/api/doorkomst_invoer.php",
+            api_key,
+        ),
+        width=80,
+        sort_dicts=False,
+    )
