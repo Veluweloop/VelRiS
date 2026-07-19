@@ -25,6 +25,13 @@ def insert_doorkomst(EVENEMENT_ID, etappeVolgnummer, ploegNummer, doorkomstTijd,
 def load_doorkomsten():
     pass
 
+
+
+
+
+
+
+
 # functie voor het opvragen van de ploeglijst, etappe's en in de databse te stoppen
 def load_competitioninfo(EVENEMENT_ID, api, api_key):
     headers = {
