@@ -8,16 +8,21 @@ import requests
 import pymysql.cursors
 import json
 
-import webapp.webapp #local webserver for entering manual data
 # op termijn verwijderen
 import config #import the config of the app
 
+# hier staan de externe tools welke worden geimporteerd. Helper scripts zijn ondersteunend en de webbapp is the flask server
+import webapp.webapp #local webserver for entering manual data
 import helper_database #import the database_init of the app
 import helper_api #import helpder function for api interaction with external servers
 
 def on_boot():
 #    print('boot')
     helper_database.create_tables() # build database if it doesnt exist yet
+    # choose how to select the primiary event
+    # read all data from the server and insert it in the database
+    
+    #below here is old
     config_all = config.config_read()
     config.config_write(config_all)
 
