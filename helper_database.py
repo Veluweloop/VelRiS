@@ -189,6 +189,21 @@ def get_instelling(instelling_naam):
 
         return None
 
+def missende_ploegen(evenement_id, etappe_volgnummer):
+    with sqlite3.connect(DB_PATH) as conn:
+        cursor = conn.execute('''
+            SELECT PLOEGLIJST.PLOEGNUMMER
+            FROM PLOEGLIJST
+            LEFT JOIN DOORKOMSTEN
+                ON PLOEGLIJST.PLOEGNUMMER = DOORKOMSTEN.PLOEG
+                AND DOORKOMSTEN.EVENEMENT_ID = PLOEGLIJST.EVENEMENT_ID
+                AND DOORKOMSTEN.ETAPPE_VOLGNUMMER = ?
+            WHERE PLOEGLIJST.EVENEMENT_ID = ?
+              AND DOORKOMSTEN.PLOEG IS NULL
+        ''', (etappe_volgnummer, evenement_id))
+
+        return [row[0] for row in cursor.fetchall()]
+
 def print_schema():
     conn = sqlite3.connect(DB_PATH)
     try:
