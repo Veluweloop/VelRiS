@@ -19,6 +19,8 @@ import helper_api #import helpder function for api interaction with external ser
 def on_boot():
 #    print('boot')
     helper_database.create_tables() # build database if it doesnt exist yet
+    background_updates() #load all data from the server and insert it in the database
+
     # choose how to select the primiary event
     # read all data from the server and insert it in the database
     
@@ -30,7 +32,21 @@ def on_boot():
 # de background updates gaan schedulen op basis van een cronjob
 
 def background_updates():
-    pass
+
+    # loading competition info from the server and inserting it in the database
+    competitioninfo = helper_api.load_competitioninfo(EVENEMENT_ID= helper_database.get_instelling('EVENEMENT_ID'), 
+                                                           api="https://veluweloop.nl/api/wedstrijdinfo.php", 
+                                                           api_key=helper_database.get_instelling('API_KEY'))
+    # updating route informatie
+    for route in competitioninfo["etappe_routes"]:
+        helper_database.insert_wisselpunt(
+            route["LOCATIE_ID_START"],
+            route["LOCATIE_NAAM_START"],
+            route["ETAPPE_VOLGNUMMER"],
+            route["EVENEMENT_ID"]
+        )
+
+    
 
 
 
