@@ -43,13 +43,19 @@ def background_updates():
     competitioninfo = helper_api.load_competitioninfo(EVENEMENT_ID= helper_database.get_instelling('EVENEMENT_ID'), 
                                                            api=helper_database.get_instelling('API_competitioninfo'), 
                                                            api_key=helper_database.get_instelling('API_KEY'))
-    # updating route informatie
     for route in competitioninfo["etappe_routes"]:
         helper_database.insert_wisselpunt(
             route["LOCATIE_ID_START"],
             route["LOCATIE_NAAM_START"],
             route["ETAPPE_VOLGNUMMER"],
             route["EVENEMENT_ID"]
+        )
+    for ploeg in competitioninfo["ploeglijst"]:
+        helper_database.insert_ploeg(
+            ploeg["PLOEG_ID"],
+            ploeg["PLOEGNUMMER"],
+            ploeg["PLOEG_NAAM"],
+            ploeg["EVENEMENT_ID"]
         )
 
     
