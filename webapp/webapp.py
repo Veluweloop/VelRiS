@@ -79,8 +79,6 @@ def invoerendoorkomst():
             evenement_id = evenement_id,   
         )
 
-    config_load = config.config_read()
-
     return render_template("invoeren_doorkomst.html", title= title)
 
 
