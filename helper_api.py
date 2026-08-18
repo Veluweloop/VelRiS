@@ -21,12 +21,6 @@ def insert_doorkomst(EVENEMENT_ID, etappeVolgnummer, ploegNummer, doorkomstTijd,
 
     return response.json()
 
-#functie voor het opvragen van alle doorkomsten van de cloud
-def load_doorkomsten():
-    pass
-
-
-
 # functie voor het opvragen van alle evenementen vanuit de server
 def load_events(api):
     response = requests.get(url=api, timeout=10)
