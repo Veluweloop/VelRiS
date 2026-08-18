@@ -50,6 +50,14 @@ def create_tables():
           )
       ''')
 
+    conn.execute('''             
+              CREATE TABLE IF NOT EXISTS INSTELLINGEN(
+              INSTELLING_ID INTEGER NOT NULL PRIMARY KEY,
+              INSTELLING_NAAM TEXT NOT NULL UNIQUE,
+              INSTELLING_WAARDE TEXT NOT NULL
+              )
+          ''')
+
 def insert_doorkomst(datetime, ploeg, ETAPPE_VOLGNUMMER, status, evenement_id, id_local=None, id_server=None, local_change=True):
     with sqlite3.connect(DB_PATH) as conn:
         local_change_flag = 1 if local_change else 0
@@ -103,6 +111,29 @@ def insert_evenement(evenement_id, evenement_naam):
             EVENEMENT_NAAM = excluded.EVENEMENT_NAAM
         ''', (evenement_id, evenement_naam))
 
+def insert_instelling(instelling_naam, instelling_waarde):
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.execute('''
+          INSERT INTO INSTELLINGEN (INSTELLING_NAAM, INSTELLING_WAARDE)
+          VALUES (?, ?)
+          ON CONFLICT(INSTELLING_NAAM) DO UPDATE SET
+            INSTELLING_WAARDE = excluded.INSTELLING_WAARDE
+        ''', (instelling_naam, instelling_waarde))
+
+def get_instelling(instelling_naam):
+    with sqlite3.connect(DB_PATH) as conn:
+        cursor = conn.execute('''
+            SELECT INSTELLING_WAARDE
+            FROM INSTELLINGEN
+            WHERE INSTELLING_NAAM = ?
+        ''', (instelling_naam,))
+
+        row = cursor.fetchone()
+
+        if row is not None:
+            return row[0]
+
+        return None
 
 def print_schema():
     conn = sqlite3.connect(DB_PATH)
