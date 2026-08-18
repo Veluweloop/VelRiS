@@ -30,7 +30,8 @@ def on_boot():
 
 # ik heb hier een loop nodig die de data opvraagd vanuit de api en het wegschrijft in de database
 # de background updates gaan schedulen op basis van een cronjob
-
+# ik mis de optie voor het uploaden van de doorkomsten die niet gelukt zijn bij de eerste poging, en het downloaden van nieuwe data van de server
+# toevoegen van try statements om te voorkomen dat de hele loop stopt bij een fout
 def background_updates():
 
     # loading all events and placing them in the database
