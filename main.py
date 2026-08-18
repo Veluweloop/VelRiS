@@ -32,7 +32,7 @@ def on_boot():
 # de background updates gaan schedulen op basis van een cronjob
 # ik mis de optie voor het uploaden van de doorkomsten die niet gelukt zijn bij de eerste poging, en het downloaden van nieuwe data van de server
 # toevoegen van try statements om te voorkomen dat de hele loop stopt bij een fout
-def background_updates():
+def update_background():
 
     # loading all events and placing them in the database
     EVENEMENT_json = helper_api.load_events(api=helper_database.get_instelling('API_events'))
@@ -59,9 +59,12 @@ def background_updates():
             ploeg["EVENEMENT_ID"]
         )
 
-    
 
-    
+# functie voor het up- and downloaden van alle doorkomsten en hier de extra logica in plaatsen voor conflicten en het updaten van de database 
+def update_doorkomsten():
+    None
+    # uloaden van alle niet gesynchroniseerde doorkomsten naar de server
+    # downloaden van alle doorkomsten van de server en deze in de lokale database plaatsen    
 
 
 
