@@ -140,6 +140,8 @@ def wijzigingen():
     return render_template("wijzigingen.html", title= title)
 
 @app.route("/instellingen", methods = ['POST', 'GET'])
+# alle instellingen staan komen nu in de database. Dit betreffen minimaal de volgende instellingen: API-Key, EVENEMENT_ID, LOCATIE_ID, WISSELPUNTPLOEG
+#onderstaanden functie en bijbehorend html bestand moeten nog aangepast worden zodat de instellingen in de database worden gezet en niet meer in de config.json file. De config.json file wordt alleen nog gebruikt voor systeem instellingen, zoals update interval, battery status, internet status etc.
 def instellingen():
     title = "Instellingen"
     config_load = config.config_read()
