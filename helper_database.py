@@ -80,6 +80,10 @@ def insert_doorkomst(datetime, ploeg, ETAPPE_VOLGNUMMER, status, evenement_id, i
                 LOCAL_CHANGE = excluded.LOCAL_CHANGE
             ''', (id_local, id_server, datetime, ploeg, ETAPPE_VOLGNUMMER, status, evenement_id, local_change_flag))
 
+def clear_wisselpunten():
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.execute('DELETE FROM WISSELPUNTEN')
+
 def insert_wisselpunt(wisselpunt_id, wisselpunt_naam, etappe_volgnummer, evenement_id):
     with sqlite3.connect(DB_PATH) as conn:
         conn.execute('''
@@ -90,6 +94,40 @@ def insert_wisselpunt(wisselpunt_id, wisselpunt_naam, etappe_volgnummer, eveneme
             ETAPPE_VOLGNUMMER = excluded.ETAPPE_VOLGNUMMER,
             EVENEMENT_ID = excluded.EVENEMENT_ID
         ''', (wisselpunt_id, wisselpunt_naam, etappe_volgnummer, evenement_id))
+
+def get_wisselpunten(evenement_id):
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.row_factory = sqlite3.Row
+
+        cursor = conn.execute('''
+            SELECT WISSELPUNT_NAAM, ETAPPE_VOLGNUMMER
+            FROM WISSELPUNTEN
+            WHERE EVENEMENT_ID = ?
+            ORDER BY ETAPPE_VOLGNUMMER
+        ''', (evenement_id,))
+
+        rows = cursor.fetchall()
+
+        return {
+            "ETAPPE_NAAM_list": [row["WISSELPUNT_NAAM"] for row in rows],
+            "ETAPPE_VOLGNUMMER_list": [row["ETAPPE_VOLGNUMMER"] for row in rows]
+        }
+
+def get_wisselpunt_by_etappe(evenement_id, etappe_volgnummer):
+    with sqlite3.connect(DB_PATH) as conn:
+        cursor = conn.execute('''
+            SELECT WISSELPUNT_NAAM
+            FROM WISSELPUNTEN
+            WHERE EVENEMENT_ID = ?
+            AND ETAPPE_VOLGNUMMER = ?
+        ''', (evenement_id, etappe_volgnummer))
+
+    row = cursor.fetchone()
+
+    if row is not None:
+        return row[0]
+
+    return None
 
 def insert_ploeg(ploeg_id, ploegnummer, ploeg_naam, evenement_id):
     with sqlite3.connect(DB_PATH) as conn:
@@ -177,5 +215,7 @@ def export_all_tables_to_csv(output_dir=None):
 
 if __name__ == "__main__":
     print_schema()
+#    clear_wisselpunten()
     export_all_tables_to_csv()
 
+    

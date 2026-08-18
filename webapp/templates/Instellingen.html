@@ -94,14 +94,12 @@
                         {{ config_load.ETAPPE_NAAM }}
                     </option>
 
-                    {% for Wisselpunt_list_optie in config_load.ETAPPE_LIST.ETAPPE_VOLGNUMMER_list %}
+                    {% for etappe_volgnummer in config_load.ETAPPE_LIST.ETAPPE_VOLGNUMMER_list %}
 
-                        {% if Wisselpunt_list_optie != config_load.ETAPPE_VOLGNUMMER %}
+                        {% if etappe_volgnummer != config_load.ETAPPE_VOLGNUMMER %}
 
-                            <option
-                                value="{{ Wisselpunt_list_optie }}"
-                            >
-                                {{ config_load.ETAPPE_LIST.ETAPPE_VOLGNUMMER_list[loop.index0] }} :
+                            <option value="{{ etappe_volgnummer }}">
+                                {{ etappe_volgnummer }} :
                                 {{ config_load.ETAPPE_LIST.ETAPPE_NAAM_list[loop.index0] }}
                             </option>
 

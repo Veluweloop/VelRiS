@@ -152,19 +152,20 @@ def instellingen():
         "ETAPPE_NAAM" : helper_database.get_instelling('WISSELPUNT_NAAM'),
         "checkpointteam" : helper_database.get_instelling('checkpointteam'),
         "checkpointteam_list" : ["wppA", "wppB", "wppC", "wppD"],
-        "ETAPPE_LIST" : {
-            "ETAPPE_VOLGNUMMER_list" : ['a', 'b', 'c', 'd'],
-            "ETAPPE_NAAM_list" : ['-1', '-2', '-3', '-4']
-        }
+        "ETAPPE_LIST" : helper_database.get_wisselpunten(helper_database.get_instelling('EVENEMENT_ID'))
     }
 
     if request.method == 'POST':
 
+        evenement_id = int(request.form['EVENEMENT_ID'])
+        etappe_volgnummer = int(request.form['etappe_volgnummer'])
+        wisselpunt_naam = helper_database.get_wisselpunt_by_etappe(evenement_id, etappe_volgnummer)
         helper_database.insert_instelling('API_KEY', request.form['API_key'])
         helper_database.insert_instelling('API_competitioninfo', request.form['API_competitioninfo'])
         helper_database.insert_instelling('API_events', request.form['API_events'])
-        helper_database.insert_instelling('EVENEMENT_ID', request.form['EVENEMENT_ID'])
-        helper_database.insert_instelling('ETAPPE_VOLGNUMMER', request.form['etappe_volgnummer'])
+        helper_database.insert_instelling('EVENEMENT_ID', evenement_id)
+        helper_database.insert_instelling('ETAPPE_VOLGNUMMER', etappe_volgnummer)
+        helper_database.insert_instelling('WISSELPUNT_NAAM', wisselpunt_naam)
         helper_database.insert_instelling('checkpointteam', request.form['checkpointteam'])
 
     return render_template("instellingen.html", title= title, config_load = instelling_huidig)

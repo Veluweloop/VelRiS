@@ -48,10 +48,10 @@ def update_background():
 
     for route in competitioninfo["etappe_routes"]:
         helper_database.insert_wisselpunt(
-            route["LOCATIE_ID_START"],
-            route["LOCATIE_NAAM_START"],
-            route["ETAPPE_VOLGNUMMER"],
-            route["EVENEMENT_ID"]
+            wisselpunt_id = route["ETAPPE_ID"],
+            wisselpunt_naam = route["LOCATIE_NAAM_FINISH"],
+            etappe_volgnummer = route["ETAPPE_VOLGNUMMER"],
+            evenement_id = route["EVENEMENT_ID"]
         )
     for ploeg in competitioninfo["ploeglijst"]:
         helper_database.insert_ploeg(
