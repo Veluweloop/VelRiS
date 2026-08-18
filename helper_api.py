@@ -21,6 +21,11 @@ def insert_doorkomst(EVENEMENT_ID, etappeVolgnummer, ploegNummer, doorkomstTijd,
 
     return response.json()
 
+# Nog bedenken hoe om te gaan met de startnummers welke ploeg, etappe afhankelijk zijn
+# ik heb hiervoor de tabel ploeg_startnummer nodig, dan is het goed te doen
+def update_doorkomst(DOORKOMST_ID, EVENEMENT_ID, etappeVolgnummer, ploegNummer, startnummer,doorkomstTijd, api, api_key):
+    None
+
 # functie voor het opvragen van alle evenementen vanuit de server
 def load_events(api):
     response = requests.get(url=api, timeout=10)
