@@ -140,4 +140,8 @@ if __name__ == '__main__':
     config.config_create() #create config file if absent
     on_boot() #action that needs to happen on boot of script
     threading.Thread(target=flaskThread).start() #start theard for webserver
-#    threading.Thread(target=bufferloop_thread).start() #start thread for background handeling
+    while True:
+        update_background()
+        time.sleep(1)
+
+# threading.Thread(target=bufferloop_thread).start() #start thread for background handeling
