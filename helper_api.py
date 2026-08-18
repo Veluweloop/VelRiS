@@ -26,6 +26,12 @@ def insert_doorkomst(EVENEMENT_ID, etappeVolgnummer, ploegNummer, doorkomstTijd,
 def update_doorkomst(DOORKOMST_ID, EVENEMENT_ID, etappeVolgnummer, ploegNummer, startnummer,doorkomstTijd, api, api_key):
     None
 
+
+
+
+
+
+
 # functie voor het opvragen van alle evenementen vanuit de server
 def load_events(api):
     response = requests.get(url=api, timeout=10)
