@@ -19,7 +19,7 @@ import helper_api #import helpder function for api interaction with external ser
 def on_boot():
 #    print('boot')
     helper_database.create_tables() # build database if it doesnt exist yet
-    background_updates() #load all data from the server and insert it in the database
+    update_background() #load all data from the server and insert it in the database
 
     # choose how to select the primiary event
     # read all data from the server and insert it in the database
@@ -136,6 +136,6 @@ def bufferloop_thread():
 # threads ombouwen naar processes, zodat de webserver niet wordt geblokkeerd door de andere taken, en de andere taken niet worden geblokkeerd door de webserver
 if __name__ == '__main__':
     config.config_create() #create config file if absent
-    on_boot() #action that needs to happen on boot of script
+#    on_boot() #action that needs to happen on boot of script
     threading.Thread(target=flaskThread).start() #start theard for webserver
     threading.Thread(target=bufferloop_thread).start() #start thread for background handeling

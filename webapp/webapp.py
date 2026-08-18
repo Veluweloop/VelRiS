@@ -64,30 +64,21 @@ def invoerendoorkomst():
     if request.method == 'POST':
         ploegNummer = request.form['team_insert']
         datetime_current = datetime.datetime.now().astimezone().replace(microsecond=0).isoformat() #current system datetime
-        evenement_id = config.config_read()["competition"]["EVENEMENT_ID"]
-        etappeVolgnummer = config.config_read()["competition"]["checkpoint"]["ETAPPE_VOLGNUMMER"]
+        evenement_id = helper_database.get_instelling('EVENEMENT_ID')
+        etappeVolgnummer = helper_database.get_instelling('ETAPPE_VOLGNUMMER')
         
         # insert doorkomt in database
         helper_database.insert_doorkomst(
             datetime = datetime_current, 
             ploeg = ploegNummer, 
             ETAPPE_VOLGNUMMER = etappeVolgnummer, 
-            status = "NA", 
+            status = "NOSYNC", 
             evenement_id = evenement_id,   
         )
 
     config_load = config.config_read()
 
-    # doorkomsten, ombouwen zodat hiern alleen een functie staat die wordt aangeroepen, en die functie staat in main.py
-    # table/json with all latest doorkomsten, filter on current etappe and evenement
-    filename = config_load["system"]["filename_registration"] #get file_name from config
-    with open(filename,'r') as f: 
-        csv_reader = csv.reader(f, delimiter=',')
-        doorkomsten = list(csv_reader)
-        doorkomsten.sort(reverse=True)
-        doorkomsten = filter(lambda c: c[4] == str(config_load["competition"]["checkpoint"]["ETAPPE_VOLGNUMMER"]) and c[5] == str(config_load["competition"]["EVENEMENT_ID"]), doorkomsten)
-
-    return render_template("invoeren_doorkomst.html", title= title, doorkomsten=doorkomsten)
+    return render_template("invoeren_doorkomst.html", title= title)
 
 @app.route("/doorkomsten_fragment")
 def doorkomsten_fragment():
