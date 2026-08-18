@@ -11,11 +11,14 @@ import main #import the main.py file
 
 app = Flask(__name__)
 
+# is de bufferloop nog steeds nodig, is het niet handiger om direct in de database weg te scrhijven?
 class webserver:
     buffer = []
     def __init___(self):
         pass            
 
+
+#grote update nodig
 @app.route('/')
 def home():
     title = "Systeem"
@@ -80,6 +83,8 @@ def invoerendoorkomst():
 
     return render_template("invoeren_doorkomst.html", title= title)
 
+
+#grote update nodig
 @app.route("/doorkomsten_fragment")
 def doorkomsten_fragment():
     config_load = config.config_read()
@@ -94,6 +99,7 @@ def doorkomsten_fragment():
 
     return render_template("table_doorkomst.html", doorkomsten=doorkomsten)
 
+# vrote update nodig
 @app.route("/invoerenwijziging", methods = ['POST', 'GET'])
 def invoerenwijzging():
     title = "Invoeren Wijzigingen"
@@ -125,11 +131,13 @@ def invoerenwijzging():
 
     return render_template("invoeren_handmatig.html", title= title)
 
+# grote update nodig
 @app.route("/wijzigingen")
 def wijzigingen():
     title = "Wijzigingen"
     return render_template("wijzigingen.html", title= title)
 
+# grote update nodig
 @app.route("/instellingen", methods = ['POST', 'GET'])
 # alle instellingen staan komen nu in de database. Dit betreffen minimaal de volgende instellingen: API-Key, EVENEMENT_ID, LOCATIE_ID, WISSELPUNTPLOEG
 #onderstaanden functie en bijbehorend html bestand moeten nog aangepast worden zodat de instellingen in de database worden gezet en niet meer in de config.json file. De config.json file wordt alleen nog gebruikt voor systeem instellingen, zoals update interval, battery status, internet status etc.
