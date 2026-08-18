@@ -35,15 +35,17 @@ def on_boot():
 def update_background():
 
     # loading all events and placing them in the database
-    EVENEMENT_json = helper_api.load_events(api=helper_database.get_instelling('API_events'))
-    for evenementen in EVENEMENT_json:
-        helper_database.insert_evenement(evenementen["EVENEMENT_ID"], 
-                                         evenementen["EVENEMENT_NAAM"])
+#    EVENEMENT_json = helper_api.load_events(api=helper_database.get_instelling('API_events'))
+#    for evenementen in EVENEMENT_json:
+#        helper_database.insert_evenement(evenementen["EVENEMENT_ID"], 
+#                                         evenementen["EVENEMENT_NAAM"])
 
     # loading competition info from the server and inserting it in the database
-    competitioninfo = helper_api.load_competitioninfo(EVENEMENT_ID= helper_database.get_instelling('EVENEMENT_ID'), 
-                                                           api=helper_database.get_instelling('API_competitioninfo'), 
-                                                           api_key=helper_database.get_instelling('API_KEY'))
+    competitioninfo = helper_api.load_competitioninfo(
+        EVENEMENT_ID= helper_database.get_instelling('EVENEMENT_ID'),
+        api=helper_database.get_instelling('API_competitioninfo'),
+        api_key=helper_database.get_instelling('API_KEY'))
+
     for route in competitioninfo["etappe_routes"]:
         helper_database.insert_wisselpunt(
             route["LOCATIE_ID_START"],
@@ -55,7 +57,7 @@ def update_background():
         helper_database.insert_ploeg(
             ploeg["PLOEG_ID"],
             ploeg["PLOEGNUMMER"],
-            ploeg["PLOEG_NAAM"],
+            ploeg["PLOEGNAAM"],
             ploeg["EVENEMENT_ID"]
         )
 
@@ -136,6 +138,6 @@ def bufferloop_thread():
 # threads ombouwen naar processes, zodat de webserver niet wordt geblokkeerd door de andere taken, en de andere taken niet worden geblokkeerd door de webserver
 if __name__ == '__main__':
     config.config_create() #create config file if absent
-#    on_boot() #action that needs to happen on boot of script
+    on_boot() #action that needs to happen on boot of script
     threading.Thread(target=flaskThread).start() #start theard for webserver
-    threading.Thread(target=bufferloop_thread).start() #start thread for background handeling
+#    threading.Thread(target=bufferloop_thread).start() #start thread for background handeling
