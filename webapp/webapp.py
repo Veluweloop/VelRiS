@@ -143,18 +143,31 @@ def wijzigingen():
 #onderstaanden functie en bijbehorend html bestand moeten nog aangepast worden zodat de instellingen in de database worden gezet en niet meer in de config.json file. De config.json file wordt alleen nog gebruikt voor systeem instellingen, zoals update interval, battery status, internet status etc.
 def instellingen():
     title = "Instellingen"
-    config_load = config.config_read()
+    instelling_huidig = {
+        "API_key" : helper_database.get_instelling('API_KEY'),
+        "API_competitioninfo" : helper_database.get_instelling('API_competitioninfo'),
+        "API_events" : helper_database.get_instelling('API_events'),
+        "EVENEMENT_ID" : helper_database.get_instelling('EVENEMENT_ID'),
+        "ETAPPE_VOLGNUMMER" : helper_database.get_instelling('ETAPPE_VOLGNUMMER'),
+        "ETAPPE_NAAM" : helper_database.get_instelling('WISSELPUNT_NAAM'),
+        "checkpointteam" : helper_database.get_instelling('checkpointteam'),
+        "checkpointteam_list" : ["wppA", "wppB", "wppC", "wppD"],
+        "ETAPPE_LIST" : {
+            "ETAPPE_VOLGNUMMER_list" : ['a', 'b', 'c', 'd'],
+            "ETAPPE_NAAM_list" : ['-1', '-2', '-3', '-4']
+        }
+    }
 
     if request.method == 'POST':
-        
-        config_load["competition"]["checkpointteam"] = request.form['checkpointteam']
-        config_load["competition"]["checkpoint"] = ast.literal_eval(request.form['checkpoint'])
-        config_load["competition"]["ETAPPE_VOLGNUMMER"] = config_load["competition"]["checkpoint"]["ETAPPE_VOLGNUMMER"]
 
-        config.config_write(config_load)
+        helper_database.insert_instelling('API_KEY', request.form['API_key'])
+        helper_database.insert_instelling('API_competitioninfo', request.form['API_competitioninfo'])
+        helper_database.insert_instelling('API_events', request.form['API_events'])
+        helper_database.insert_instelling('EVENEMENT_ID', request.form['EVENEMENT_ID'])
+        helper_database.insert_instelling('ETAPPE_VOLGNUMMER', request.form['etappe_volgnummer'])
+        helper_database.insert_instelling('checkpointteam', request.form['checkpointteam'])
 
-        
-    return render_template("instellingen.html", title= title, config_load = config_load)
+    return render_template("instellingen.html", title= title, config_load = instelling_huidig)
 
 
 if __name__ == '__main__':

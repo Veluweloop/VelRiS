@@ -2,41 +2,130 @@
 
 {% block content %}
     <div class="container">
-    <h3>Instellingen</h3>
 
-    <form method="POST" id="update_instellingen">
-        <div class="input-field col s12">
-            
-            <select id="checkpointteam" name="checkpointteam">
-                <option value='{{config_load.competition.checkpointteam}}' selected>{{config_load.competition.checkpointteam}}</option>
-                {% for Wisselpuntploeg_list_optie in config_load.competition.checkpointteam_list %}
-                    {% if Wisselpuntploeg_list_optie != config_load.competition.checkpointteam %}
-                        <option value="{{Wisselpuntploeg_list_optie}}">{{ Wisselpuntploeg_list_optie }}</option>        
-                    {% endif %}   
-                {% endfor %}    
-            </select> 
-            
-            <label>Selecteer Wisselpuntploeg</label>
+        <h3>Instellingen</h3>
 
-        </div>
+        <form method="POST" id="update_instellingen">
 
-        <div class="input-field col s12">
-            
-            <select id="checkpoint" name="checkpoint">
-                <option value="{{config_load.competition.checkpoint }}" selected>{{ config_load.competition.checkpoint.ETAPPE_VOLGNUMMER }} : {{ config_load.competition.checkpoint.ETAPPE_NAAM }}</option>
-                {% for Wisselpunt_list_optie in config_load.competition.checkpoint_list %}
-                    {% if Wisselpunt_list_optie != config_load.competition.checkpoint %}
-                    <option value="{{Wisselpunt_list_optie}}">{{ Wisselpunt_list_optie.ETAPPE_VOLGNUMMER }} : {{ Wisselpunt_list_optie.ETAPPE_NAAM }}</option>
-                    {% endif %}           
-                {% endfor %}    
-            </select> 
-            
-            <label>Selecteer Etappe</label>
+            <!-- API Key -->
+            <div class="input-field col s12">
+                <input
+                    id="API_key"
+                    name="API_key"
+                    type="text"
+                    value="{{ config_load.API_key }}"
+                >
+                <label for="API_key">API Key</label>
+            </div>
 
-        </div>
+            <!-- API competitioninfo -->
+            <div class="input-field col s12">
+                <input
+                    id="API_competitioninfo"
+                    name="API_competitioninfo"
+                    type="text"
+                    value="{{ config_load.API_competitioninfo }}"
+                >
+                <label for="API_competitioninfo">API Competition Info</label>
+            </div>
 
-        <button class="btn col s4 center-align" type="submit" form="update_instellingen" value="Submit">Wijzigingen opslaan</button>
+            <!-- API events -->
+            <div class="input-field col s12">
+                <input
+                    id="API_events"
+                    name="API_events"
+                    type="text"
+                    value="{{ config_load.API_events }}"
+                >
+                <label for="API_events">API Events</label>
+            </div>
 
-    </form>
-</div>
-{% endblock%}
+            <!-- Evenement ID -->
+            <div class="input-field col s12">
+                <input
+                    id="EVENEMENT_ID"
+                    name="EVENEMENT_ID"
+                    type="text"
+                    value="{{ config_load.EVENEMENT_ID }}"
+                >
+                <label for="EVENEMENT_ID">Evenement ID</label>
+            </div>
+
+            <!-- Wisselpuntploeg -->
+            <div class="input-field col s12">
+
+                <select id="checkpointteam" name="checkpointteam">
+
+                    <option
+                        value="{{ config_load.checkpointteam }}"
+                        selected
+                    >
+                        {{ config_load.checkpointteam }}
+                    </option>
+
+                    {% for Wisselpuntploeg_list_optie in config_load.checkpointteam_list %}
+
+                        {% if Wisselpuntploeg_list_optie != config_load.checkpointteam %}
+
+                            <option value="{{ Wisselpuntploeg_list_optie }}">
+                                {{ Wisselpuntploeg_list_optie }}
+                            </option>
+
+                        {% endif %}
+
+                    {% endfor %}
+
+                </select>
+
+                <label>Selecteer Wisselpuntploeg</label>
+
+            </div>
+
+            <!-- Etappe -->
+            <div class="input-field col s12">
+
+                <select id="checkpoint" name="etappe_volgnummer">
+
+                    <option
+                        value="{{ config_load.ETAPPE_VOLGNUMMER }}"
+                        selected
+                    >
+                        {{ config_load.ETAPPE_VOLGNUMMER }} :
+                        {{ config_load.ETAPPE_NAAM }}
+                    </option>
+
+                    {% for Wisselpunt_list_optie in config_load.ETAPPE_LIST.ETAPPE_VOLGNUMMER_list %}
+
+                        {% if Wisselpunt_list_optie != config_load.ETAPPE_VOLGNUMMER %}
+
+                            <option
+                                value="{{ Wisselpunt_list_optie }}"
+                            >
+                                {{ config_load.ETAPPE_LIST.ETAPPE_VOLGNUMMER_list[loop.index0] }} :
+                                {{ config_load.ETAPPE_LIST.ETAPPE_NAAM_list[loop.index0] }}
+                            </option>
+
+                        {% endif %}
+
+                    {% endfor %}
+
+                </select>
+
+                <label>Selecteer Etappe</label>
+
+            </div>
+
+            <!-- Submit -->
+            <button
+                class="btn col s4 center-align"
+                type="submit"
+                form="update_instellingen"
+                value="Submit"
+            >
+                Wijzigingen opslaan
+            </button>
+
+        </form>
+
+    </div>
+{% endblock %}
