@@ -33,9 +33,15 @@ def on_boot():
 
 def background_updates():
 
+    # loading all events and placing them in the database
+    EVENEMENT_json = helper_api.load_events(api=helper_database.get_instelling('API_events'))
+    for evenementen in EVENEMENT_json:
+        helper_database.insert_evenement(evenementen["EVENEMENT_ID"], 
+                                         evenementen["EVENEMENT_NAAM"])
+
     # loading competition info from the server and inserting it in the database
     competitioninfo = helper_api.load_competitioninfo(EVENEMENT_ID= helper_database.get_instelling('EVENEMENT_ID'), 
-                                                           api="https://veluweloop.nl/api/wedstrijdinfo.php", 
+                                                           api=helper_database.get_instelling('API_competitioninfo'), 
                                                            api_key=helper_database.get_instelling('API_KEY'))
     # updating route informatie
     for route in competitioninfo["etappe_routes"]:
@@ -45,6 +51,8 @@ def background_updates():
             route["ETAPPE_VOLGNUMMER"],
             route["EVENEMENT_ID"]
         )
+
+    
 
     
 
