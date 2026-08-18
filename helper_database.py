@@ -58,6 +58,26 @@ def create_tables():
               )
           ''')
 
+def clear_wisselpunten():
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.execute('DELETE FROM WISSELPUNTEN')
+
+def clear_doorkomsten():
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.execute('DELETE FROM DOORKOMSTEN')
+
+def clear_ploeglijst():
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.execute('DELETE FROM PLOEGLIJST')
+
+def clear_evenementen():
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.execute('DELETE FROM EVENEMENTEN')
+
+def clear_instellingen():
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.execute('DELETE FROM INSTELLINGEN')
+
 def insert_doorkomst(datetime, ploeg, ETAPPE_VOLGNUMMER, status, evenement_id, id_local=None, id_server=None, local_change=True):
     with sqlite3.connect(DB_PATH) as conn:
         local_change_flag = 1 if local_change else 0
@@ -79,10 +99,6 @@ def insert_doorkomst(datetime, ploeg, ETAPPE_VOLGNUMMER, status, evenement_id, i
                 EVENEMENT_ID = excluded.EVENEMENT_ID,
                 LOCAL_CHANGE = excluded.LOCAL_CHANGE
             ''', (id_local, id_server, datetime, ploeg, ETAPPE_VOLGNUMMER, status, evenement_id, local_change_flag))
-
-def clear_wisselpunten():
-    with sqlite3.connect(DB_PATH) as conn:
-        conn.execute('DELETE FROM WISSELPUNTEN')
 
 def insert_wisselpunt(wisselpunt_id, wisselpunt_naam, etappe_volgnummer, evenement_id):
     with sqlite3.connect(DB_PATH) as conn:
