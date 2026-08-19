@@ -100,6 +100,22 @@ def insert_doorkomst(datetime, ploeg, ETAPPE_VOLGNUMMER, status, evenement_id, i
                 LOCAL_CHANGE = excluded.LOCAL_CHANGE
             ''', (id_local, id_server, datetime, ploeg, ETAPPE_VOLGNUMMER, status, evenement_id, local_change_flag))
 
+def get_doorkomsten(evenement_id, etappe_volgnummer):
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.row_factory = sqlite3.Row
+
+        cursor = conn.execute('''
+            SELECT DATETIME, PLOEG, STATUS
+            FROM DOORKOMSTEN
+            WHERE EVENEMENT_ID = ?
+            AND ETAPPE_VOLGNUMMER = ?
+            ORDER BY DATETIME DESC
+        ''', (evenement_id, etappe_volgnummer))
+
+        rows = cursor.fetchall()
+
+        return [(row["DATETIME"], row["PLOEG"], row["STATUS"]) for row in rows]
+
 def insert_wisselpunt(wisselpunt_id, wisselpunt_naam, etappe_volgnummer, evenement_id):
     with sqlite3.connect(DB_PATH) as conn:
         conn.execute('''

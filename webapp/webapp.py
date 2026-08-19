@@ -85,16 +85,12 @@ def invoerendoorkomst():
 #grote update nodig
 @app.route("/doorkomsten_fragment")
 def doorkomsten_fragment():
-    config_load = config.config_read()
 
-    # doorkomsten
-    filename = config_load["system"]["filename_registration"] #get file_name from config
-    with open(filename,'r') as f: 
-        csv_reader = csv.reader(f, delimiter=',')
-        doorkomsten = list(csv_reader)
-        doorkomsten.sort(reverse=True)
-        doorkomsten = filter(lambda c: c[4] == str(config_load["competition"]["checkpoint"]["ETAPPE_VOLGNUMMER"]) and c[5] == str(config_load["competition"]["EVENEMENT_ID"]), doorkomsten)
+    evenement_id = helper_database.get_instelling('EVENEMENT_ID')
+    eteppe_volgnummer = helper_database.get_instelling('ETAPPE_VOLGNUMMER')
 
+    doorkomsten = helper_database.get_doorkomsten(evenement_id, eteppe_volgnummer)
+    
     return render_template("table_doorkomst.html", doorkomsten=doorkomsten)
 
 # vrote update nodig
