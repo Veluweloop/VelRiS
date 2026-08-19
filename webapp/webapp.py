@@ -18,7 +18,7 @@ class webserver:
         pass            
 
 
-#grote update nodig
+#Ploeglijst en instellingen moet nog geladen worden, fix van oude config constructie
 @app.route('/')
 def home():
     title = "Systeem"
