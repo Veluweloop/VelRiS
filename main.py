@@ -62,45 +62,6 @@ def update_background():
         )
 
 
-# functie voor het up- and downloaden van alle doorkomsten en hier de extra logica in plaatsen voor conflicten en het updaten van de database 
-def update_doorkomsten():
-    None
-    # uloaden van alle niet gesynchroniseerde doorkomsten naar de server
-    # downloaden van alle doorkomsten van de server en deze in de lokale database plaatsen    
-
-
-
-
-
-# dit gaan aanpassen om het direct in de database te zetten, ipv in een file
-def save_data(data, source_type): #function to save data from memory to file
-    ETAPPE_VOLGNUMMER = config.config_read()["competition"]["ETAPPE_VOLGNUMMER"] #huidige etappe
-    EVENEMENT_ID = config.config_read()["competition"]["EVENEMENT_ID"] #huidig evenement
-    LOCATIE_ID = config.config_read()["competition"]["LOCATIE_ID"] #huidige locatie
-    checkpointteam = config.config_read()["competition"]["checkpointteam"] #get current checkpointteam
-
-    data_for_file = []
-    for tup in data:
-        if source_type == "MANUAL":
-            webapp_datetime = tup[0]
-            webapp_team = tup[1]
-            webapp_straf = tup[2]
-
-            if webapp_team == "":
-                webapp_team = 0
-
-            data_temp = (webapp_datetime, "Na", webapp_team, "Na", ETAPPE_VOLGNUMMER, EVENEMENT_ID, LOCATIE_ID, checkpointteam, source_type, "no_sync", webapp_straf)
-            data_for_file.append(data_temp)
-
-        else:
-            return None
- 
-    filename = config.config_read()["system"]["filename_registration"] #get file_name from config
-    with open(filename,'a', newline= "") as f: #write buffer to file
-        writer = csv.writer(f)
-        writer.writerows(data_for_file)
-
-
 def flaskThread(): #function to start local webserver
     webapp.webapp.app.run(host="0.0.0.0", threaded=True, debug = False) #start webserver on all interfaces, with threading enabled and debug mode enabled
 
