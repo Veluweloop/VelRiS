@@ -53,8 +53,6 @@ def invoerendoorkomst():
 
     return render_template("invoeren_doorkomst.html", title= title)
 
-
-#grote update nodig
 @app.route("/doorkomsten_fragment")
 def doorkomsten_fragment():
 
@@ -89,11 +87,7 @@ def invoerenwijzging():
             webserver().buffer.append(buffer_temp)
 
         else:
-            print("else")
-
-#           print(datetime_current, " ", team)
-#           print(webserver().buffer)
-        
+            print("else") 
 
     return render_template("invoeren_handmatig.html", title= title)
 
