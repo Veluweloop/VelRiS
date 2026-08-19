@@ -154,7 +154,7 @@ def get_wisselpunt_by_etappe(evenement_id, etappe_volgnummer):
             AND ETAPPE_VOLGNUMMER = ?
         ''', (evenement_id, etappe_volgnummer))
 
-    row = cursor.fetchone()
+        row = cursor.fetchone()
 
     if row is not None:
         return row[0]

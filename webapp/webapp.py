@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 from flask.config import Config 
 import datetime
 import time
@@ -98,35 +98,61 @@ def wijzigingen():
     return render_template("wijzigingen.html", title= title)
 
 # grote update nodig
-@app.route("/instellingen", methods = ['POST', 'GET'])
+@app.route("/instellingen", methods=['GET', 'POST'])
 def instellingen():
     title = "Instellingen"
-    instelling_huidig = {
-        "API_key" : helper_database.get_instelling('API_KEY'),
-        "API_competitioninfo" : helper_database.get_instelling('API_competitioninfo'),
-        "API_events" : helper_database.get_instelling('API_events'),
-        "EVENEMENT_ID" : helper_database.get_instelling('EVENEMENT_ID'),
-        "ETAPPE_VOLGNUMMER" : helper_database.get_instelling('ETAPPE_VOLGNUMMER'),
-        "ETAPPE_NAAM" : helper_database.get_instelling('WISSELPUNT_NAAM'),
-        "checkpointteam" : helper_database.get_instelling('checkpointteam'),
-        "checkpointteam_list" : ["wppA", "wppB", "wppC", "wppD"],
-        "ETAPPE_LIST" : helper_database.get_wisselpunten(helper_database.get_instelling('EVENEMENT_ID'))
-    }
 
     if request.method == 'POST':
 
-        evenement_id = int(request.form['EVENEMENT_ID'])
-        etappe_volgnummer = int(request.form['etappe_volgnummer'])
-        wisselpunt_naam = helper_database.get_wisselpunt_by_etappe(evenement_id, etappe_volgnummer)
-        helper_database.insert_instelling('API_KEY', request.form['API_key'])
-        helper_database.insert_instelling('API_competitioninfo', request.form['API_competitioninfo'])
-        helper_database.insert_instelling('API_events', request.form['API_events'])
-        helper_database.insert_instelling('EVENEMENT_ID', evenement_id)
-        helper_database.insert_instelling('ETAPPE_VOLGNUMMER', etappe_volgnummer)
-        helper_database.insert_instelling('WISSELPUNT_NAAM', wisselpunt_naam)
-        helper_database.insert_instelling('checkpointteam', request.form['checkpointteam'])
+        action = request.form.get("action")
 
-    return render_template("instellingen.html", title= title, config_load = instelling_huidig)
+        # ==========================================
+        # FORM 1: Event/API instellingen
+        # ==========================================
+        if action == "event":
+            evenement_id = int(request.form['EVENEMENT_ID'])
+            helper_database.insert_instelling('API_KEY', request.form['API_key'])
+            helper_database.insert_instelling('API_competitioninfo', request.form['API_competitioninfo'])
+            helper_database.insert_instelling('API_events', request.form['API_events'])
+            helper_database.insert_instelling('EVENEMENT_ID', evenement_id)
+
+            # Download/load data for the new event
+            main.update_background()
+
+            return redirect(url_for("instellingen"))
+
+        # ==========================================
+        # FORM 2: Etappe instellingen
+        # ==========================================
+        elif action == "etappe":
+
+            etappe_volgnummer = int(request.form['etappe_volgnummer'])
+            evenement_id = helper_database.get_instelling('EVENEMENT_ID')
+            wisselpunt_naam = helper_database.get_wisselpunt_by_etappe(evenement_id, etappe_volgnummer)
+            helper_database.insert_instelling('ETAPPE_VOLGNUMMER', etappe_volgnummer)
+            helper_database.insert_instelling('WISSELPUNT_NAAM', wisselpunt_naam)
+            helper_database.insert_instelling('checkpointteam', request.form['checkpointteam'])
+
+            return redirect(url_for("instellingen"))
+
+    # ==========================================
+    # GET: load current settings
+    # ==========================================
+
+    evenement_id = helper_database.get_instelling('EVENEMENT_ID')
+    instelling_huidig = {
+        "API_key": helper_database.get_instelling('API_KEY'),
+        "API_competitioninfo": helper_database.get_instelling('API_competitioninfo'),
+        "API_events": helper_database.get_instelling('API_events'),
+        "EVENEMENT_ID": evenement_id,
+        "ETAPPE_VOLGNUMMER": helper_database.get_instelling('ETAPPE_VOLGNUMMER'),
+        "ETAPPE_NAAM": helper_database.get_instelling('WISSELPUNT_NAAM'),
+        "checkpointteam": helper_database.get_instelling('checkpointteam'),
+        "checkpointteam_list": ["wppA", "wppB", "wppC", "wppD"],
+        "ETAPPE_LIST": helper_database.get_wisselpunten(evenement_id)
+    }
+
+    return render_template("instellingen.html", title=title, config_load=instelling_huidig)
 
 
 if __name__ == '__main__':

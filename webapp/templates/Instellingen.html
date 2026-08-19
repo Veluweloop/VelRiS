@@ -1,129 +1,240 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="container">
 
-        <h3>Instellingen</h3>
+<div class="container">
 
-        <form method="POST" id="update_instellingen">
+    <h3>Instellingen</h3>
 
-            <!-- API Key -->
-            <div class="input-field col s12">
-                <input
-                    id="API_key"
-                    name="API_key"
-                    type="text"
-                    value="{{ config_load.API_key }}"
+
+    <!-- ===================================================== -->
+    <!-- EVENEMENT / API INSTELLINGEN                          -->
+    <!-- ===================================================== -->
+
+    <h4>Evenement instellingen</h4>
+
+    <form method="POST">
+
+        <!-- Tell Flask which form was submitted -->
+        <input type="hidden" name="action" value="event">
+
+
+        <!-- API Key -->
+        <div class="input-field col s12">
+
+            <input
+                id="API_key"
+                name="API_key"
+                type="text"
+                value="{{ config_load.API_key or '' }}"
+            >
+
+            <label for="API_key">
+                API Key
+            </label>
+
+        </div>
+
+
+        <!-- API competitioninfo -->
+        <div class="input-field col s12">
+
+            <input
+                id="API_competitioninfo"
+                name="API_competitioninfo"
+                type="text"
+                value="{{ config_load.API_competitioninfo or '' }}"
+            >
+
+            <label for="API_competitioninfo">
+                API Competition Info
+            </label>
+
+        </div>
+
+
+        <!-- API events -->
+        <div class="input-field col s12">
+
+            <input
+                id="API_events"
+                name="API_events"
+                type="text"
+                value="{{ config_load.API_events or '' }}"
+            >
+
+            <label for="API_events">
+                API Events
+            </label>
+
+        </div>
+
+
+        <!-- Event ID -->
+        <div class="input-field col s12">
+
+            <input
+                id="EVENEMENT_ID"
+                name="EVENEMENT_ID"
+                type="number"
+                value="{{ config_load.EVENEMENT_ID or '' }}"
+            >
+
+            <label for="EVENEMENT_ID">
+                Evenement ID
+            </label>
+
+        </div>
+
+
+        <!-- Save event -->
+        <button
+            class="btn"
+            type="submit"
+        >
+            Evenement opslaan
+        </button>
+
+    </form>
+
+
+    <br>
+    <br>
+
+
+    <!-- ===================================================== -->
+    <!-- ETAPPE INSTELLINGEN                                   -->
+    <!-- ===================================================== -->
+
+    <h4>Etappe instellingen</h4>
+
+    <form method="POST">
+
+        <!-- Tell Flask which form was submitted -->
+        <input type="hidden" name="action" value="etappe">
+
+
+        <!-- ================================================= -->
+        <!-- WISSELPUNTPLOEG                                    -->
+        <!-- ================================================= -->
+
+        <div class="input-field col s12">
+
+            <select
+                id="checkpointteam"
+                name="checkpointteam"
+            >
+
+                <!-- Current value -->
+                <option
+                    value="{{ config_load.checkpointteam }}"
+                    selected
                 >
-                <label for="API_key">API Key</label>
-            </div>
+                    {{ config_load.checkpointteam }}
+                </option>
 
-            <!-- API competitioninfo -->
-            <div class="input-field col s12">
-                <input
-                    id="API_competitioninfo"
-                    name="API_competitioninfo"
-                    type="text"
-                    value="{{ config_load.API_competitioninfo }}"
-                >
-                <label for="API_competitioninfo">API Competition Info</label>
-            </div>
 
-            <!-- API events -->
-            <div class="input-field col s12">
-                <input
-                    id="API_events"
-                    name="API_events"
-                    type="text"
-                    value="{{ config_load.API_events }}"
-                >
-                <label for="API_events">API Events</label>
-            </div>
+                <!-- Other possible values -->
+                {% for optie in config_load.checkpointteam_list %}
 
-            <!-- Evenement ID -->
-            <div class="input-field col s12">
-                <input
-                    id="EVENEMENT_ID"
-                    name="EVENEMENT_ID"
-                    type="text"
-                    value="{{ config_load.EVENEMENT_ID }}"
-                >
-                <label for="EVENEMENT_ID">Evenement ID</label>
-            </div>
+                    {% if optie != config_load.checkpointteam %}
 
-            <!-- Wisselpuntploeg -->
-            <div class="input-field col s12">
+                        <option value="{{ optie }}">
+                            {{ optie }}
+                        </option>
 
-                <select id="checkpointteam" name="checkpointteam">
+                    {% endif %}
 
-                    <option
-                        value="{{ config_load.checkpointteam }}"
-                        selected
-                    >
-                        {{ config_load.checkpointteam }}
-                    </option>
+                {% endfor %}
 
-                    {% for Wisselpuntploeg_list_optie in config_load.checkpointteam_list %}
+            </select>
 
-                        {% if Wisselpuntploeg_list_optie != config_load.checkpointteam %}
+            <label>
+                Selecteer Wisselpuntploeg
+            </label>
 
-                            <option value="{{ Wisselpuntploeg_list_optie }}">
-                                {{ Wisselpuntploeg_list_optie }}
-                            </option>
+        </div>
 
-                        {% endif %}
 
-                    {% endfor %}
+        <!-- ================================================= -->
+        <!-- ETAPPE                                             -->
+        <!-- ================================================= -->
 
-                </select>
+        <div class="input-field col s12">
 
-                <label>Selecteer Wisselpuntploeg</label>
+            <select
+                id="checkpoint"
+                name="etappe_volgnummer"
+            >
 
-            </div>
-
-            <!-- Etappe -->
-            <div class="input-field col s12">
-
-                <select id="checkpoint" name="etappe_volgnummer">
+                <!-- Current etappe -->
+                {% if config_load.ETAPPE_VOLGNUMMER %}
 
                     <option
                         value="{{ config_load.ETAPPE_VOLGNUMMER }}"
                         selected
                     >
-                        {{ config_load.ETAPPE_VOLGNUMMER }} :
+                        {{ config_load.ETAPPE_VOLGNUMMER }}
+                        :
                         {{ config_load.ETAPPE_NAAM }}
                     </option>
 
-                    {% for etappe_volgnummer in config_load.ETAPPE_LIST.ETAPPE_VOLGNUMMER_list %}
+                {% endif %}
 
-                        {% if etappe_volgnummer != config_load.ETAPPE_VOLGNUMMER %}
 
-                            <option value="{{ etappe_volgnummer }}">
-                                {{ etappe_volgnummer }} :
-                                {{ config_load.ETAPPE_LIST.ETAPPE_NAAM_list[loop.index0] }}
-                            </option>
+                <!-- Available etappes -->
+                {% for etappe_volgnummer in config_load.ETAPPE_LIST.ETAPPE_VOLGNUMMER_list %}
 
-                        {% endif %}
+                    {% if etappe_volgnummer|string != config_load.ETAPPE_VOLGNUMMER|string %}
 
-                    {% endfor %}
+                        <option
+                            value="{{ etappe_volgnummer }}"
+                        >
+                            {{ etappe_volgnummer }}
+                            :
+                            {{ config_load.ETAPPE_LIST.ETAPPE_NAAM_list[loop.index0] }}
+                        </option>
 
-                </select>
+                    {% endif %}
 
-                <label>Selecteer Etappe</label>
+                {% endfor %}
 
-            </div>
+            </select>
 
-            <!-- Submit -->
-            <button
-                class="btn col s4 center-align"
-                type="submit"
-                form="update_instellingen"
-                value="Submit"
-            >
-                Wijzigingen opslaan
-            </button>
+            <label>
+                Selecteer Etappe
+            </label>
 
-        </form>
+        </div>
 
-    </div>
+
+        <!-- Save etappe -->
+        <button
+            class="btn"
+            type="submit"
+        >
+            Etappe opslaan
+        </button>
+
+    </form>
+
+</div>
+
+
+<!-- ========================================================= -->
+<!-- MATERIALIZE SELECT INITIALIZATION                         -->
+<!-- ========================================================= -->
+
+<script>
+
+document.addEventListener('DOMContentLoaded', function() {
+
+    var elems = document.querySelectorAll('select');
+
+    M.FormSelect.init(elems);
+
+});
+
+</script>
+
 {% endblock %}
