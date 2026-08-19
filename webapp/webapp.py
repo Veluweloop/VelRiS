@@ -23,40 +23,12 @@ class webserver:
 def home():
     title = "Systeem"
     config_load = config.config_read()
-
-    # doorkomsten
-    filename = config_load["system"]["filename_registration"] #get file_name from config
-    with open(filename,'r') as f: 
-        csv_reader = csv.reader(f, delimiter=',')
-        doorkomsten = list(csv_reader)
-        doorkomsten.sort(reverse=True)
-        doorkomsten = filter(lambda c: c[4] == str(config_load["competition"]["checkpoint"]["ETAPPE_VOLGNUMMER"]) and c[5] == str(config_load["competition"]["EVENEMENT_ID"]), doorkomsten)
+    
+    # build doorkomsten
+    doorkomsten = helper_database.get_doorkomsten(helper_database.get_instelling('EVENEMENT_ID'), helper_database.get_instelling('ETAPPE_VOLGNUMMER'))
         
-
-    # missende ploegen
-    filename = config_load["system"]["filename_registration"] #get file_name from config
-    with open(filename,'r') as f: 
-        csv_reader = csv.reader(f, delimiter=',')
-        doorkomsten_2 = list(csv_reader)
-        doorkomsten_2 = filter(lambda c: c[4] == str(config_load["competition"]["checkpoint"]["ETAPPE_VOLGNUMMER"]) and c[5] == str(config_load["competition"]["EVENEMENT_ID"]), doorkomsten_2)
-        ploeglijst = config_load["competition"]["team_list"]
-        doorkomst_list = []
-        missende_ploeg = []
-        
-        # build doorkomsten
-        for record in doorkomsten_2:
-            doorkomst_list.append(record[2])	
-
-        # build doorkomsten_online list
-        doorkomsten_online = config_load["competition"]["doorkomsten"]
-        for doorkomst in doorkomsten_online:
-            if str(doorkomst["ETAPPE_VOLGNUMMER"]) == str(config_load["competition"]["checkpoint"]["ETAPPE_VOLGNUMMER"]):
-                doorkomst_list.append(str(doorkomst["STARTNUMMER"])[:3]) 
-
-        # build missende ploegen
-        for ploeg in ploeglijst:
-            if str(ploeg["PLOEGNUMMER"]) not in doorkomst_list:
-                missende_ploeg.append(ploeg)
+    # build missende ploegen
+    missende_ploeg = helper_database.get_missende_ploegen(helper_database.get_instelling('EVENEMENT_ID'), helper_database.get_instelling('ETAPPE_VOLGNUMMER'))
         
     return render_template("systeem_status.html", title = title, config_load = config_load, doorkomsten = doorkomsten, missende_ploeg = missende_ploeg)
 

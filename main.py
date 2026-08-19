@@ -102,7 +102,7 @@ def save_data(data, source_type): #function to save data from memory to file
 
 
 def flaskThread(): #function to start local webserver
-    webapp.webapp.app.run(host="0.0.0.0", threaded=False)
+    webapp.webapp.app.run(host="0.0.0.0", threaded=True, debug = False) #start webserver on all interfaces, with threading enabled and debug mode enabled
 
 
 # heeft nog een grote update nodig, wordt de functie waarin alle achtergrond taken worden uitgevoerd, zoals het uploaden van data die niet gelukt is bij de eerste poging, en het downloaden van nieuwe data van de cloud
