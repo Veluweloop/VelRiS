@@ -21,13 +21,6 @@ def on_boot():
     helper_database.create_tables() # build database if it doesnt exist yet
     update_background() #load all data from the server and insert it in the database
 
-    # choose how to select the primiary event
-    # read all data from the server and insert it in the database
-    
-    #below here is old
-    config_all = config.config_read()
-    config.config_write(config_all)
-
 # ik heb hier een loop nodig die de data opvraagd vanuit de api en het wegschrijft in de database
 # de background updates gaan schedulen op basis van een cronjob
 # ik mis de optie voor het uploaden van de doorkomsten die niet gelukt zijn bij de eerste poging, en het downloaden van nieuwe data van de server
@@ -61,6 +54,10 @@ def update_background():
             ploeg["EVENEMENT_ID"]
         )
 
+
+def update_doorkomsten():
+    helper_database.get_doorkomsten
+    None
 
 def flaskThread(): #function to start local webserver
     webapp.webapp.app.run(host="0.0.0.0", threaded=True, debug = False) #start webserver on all interfaces, with threading enabled and debug mode enabled

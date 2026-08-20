@@ -8,13 +8,13 @@
     {% for doorkomst in doorkomsten %}
         <tr>
             <td>
-                {{doorkomst[0]}}
+                {{doorkomst["DATETIME"]}}
             </td>
             <td>
-                {{doorkomst[1]}}
+                {{doorkomst["PLOEG"]}}
             </td>
             <td>
-                {{doorkomst[2]}}
+                {{doorkomst["STATUS"]}}
             </td>
         </tr>
               

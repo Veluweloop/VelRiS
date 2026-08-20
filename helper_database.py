@@ -1,5 +1,6 @@
 import csv
 import sqlite3
+from contextlib import closing
 from datetime import datetime
 from pathlib import Path
 
@@ -9,7 +10,7 @@ EXPORT_DIR = Path(__file__).with_name("exports")
 
 def create_tables():
     # sql code nog loskoppelen van de rest van de code, zodat het makkelijker is om de database te wijzigen
-    with sqlite3.connect(DB_PATH) as conn:
+    with closing(sqlite3.connect(DB_PATH)) as conn, conn:
         # maken van de tabel voor de doorkomsten
         # besluiten of de registraties van andere wisselpunten vanuit de remote databasde ook in deze tabel komen
         conn.execute('''
@@ -50,7 +51,7 @@ def create_tables():
           )
       ''')
 
-    conn.execute('''             
+        conn.execute('''             
               CREATE TABLE IF NOT EXISTS INSTELLINGEN(
               INSTELLING_ID INTEGER NOT NULL PRIMARY KEY,
               INSTELLING_NAAM TEXT NOT NULL UNIQUE,
@@ -59,27 +60,27 @@ def create_tables():
           ''')
 
 def clear_wisselpunten():
-    with sqlite3.connect(DB_PATH) as conn:
+    with closing(sqlite3.connect(DB_PATH)) as conn, conn:
         conn.execute('DELETE FROM WISSELPUNTEN')
 
 def clear_doorkomsten():
-    with sqlite3.connect(DB_PATH) as conn:
+    with closing(sqlite3.connect(DB_PATH)) as conn, conn:
         conn.execute('DELETE FROM DOORKOMSTEN')
 
 def clear_ploeglijst():
-    with sqlite3.connect(DB_PATH) as conn:
+    with closing(sqlite3.connect(DB_PATH)) as conn, conn:
         conn.execute('DELETE FROM PLOEGLIJST')
 
 def clear_evenementen():
-    with sqlite3.connect(DB_PATH) as conn:
+    with closing(sqlite3.connect(DB_PATH)) as conn, conn:
         conn.execute('DELETE FROM EVENEMENTEN')
 
 def clear_instellingen():
-    with sqlite3.connect(DB_PATH) as conn:
+    with closing(sqlite3.connect(DB_PATH)) as conn, conn:
         conn.execute('DELETE FROM INSTELLINGEN')
 
 def insert_doorkomst(datetime, ploeg, ETAPPE_VOLGNUMMER, status, evenement_id, id_local=None, id_server=None, local_change=True):
-    with sqlite3.connect(DB_PATH) as conn:
+    with closing(sqlite3.connect(DB_PATH)) as conn, conn:
         local_change_flag = 1 if local_change else 0
         if id_local is None:
             conn.execute('''
@@ -100,24 +101,32 @@ def insert_doorkomst(datetime, ploeg, ETAPPE_VOLGNUMMER, status, evenement_id, i
                 LOCAL_CHANGE = excluded.LOCAL_CHANGE
             ''', (id_local, id_server, datetime, ploeg, ETAPPE_VOLGNUMMER, status, evenement_id, local_change_flag))
 
-def get_doorkomsten(evenement_id, etappe_volgnummer):
-    with sqlite3.connect(DB_PATH) as conn:
+def get_doorkomsten(evenement_id=None, etappe_volgnummer=None):
+    with closing(sqlite3.connect(DB_PATH)) as conn, conn:
         conn.row_factory = sqlite3.Row
 
-        cursor = conn.execute('''
-            SELECT DATETIME, PLOEG, STATUS
-            FROM DOORKOMSTEN
-            WHERE EVENEMENT_ID = ?
-            AND ETAPPE_VOLGNUMMER = ?
-            ORDER BY DATETIME DESC
-        ''', (evenement_id, etappe_volgnummer))
+        if evenement_id is None or etappe_volgnummer is None:
+            cursor = conn.execute('''
+                SELECT *
+                FROM DOORKOMSTEN
+                ORDER BY DATETIME DESC
+            ''')
+        else:
+            cursor = conn.execute('''
+                SELECT *
+                FROM DOORKOMSTEN
+                WHERE EVENEMENT_ID = ?
+                AND ETAPPE_VOLGNUMMER = ?
+                ORDER BY DATETIME DESC
+            ''', (evenement_id, etappe_volgnummer))
 
         rows = cursor.fetchall()
 
-        return [(row["DATETIME"], row["PLOEG"], row["STATUS"]) for row in rows]
+        return [dict(row) for row in rows]
+
 
 def insert_wisselpunt(wisselpunt_id, wisselpunt_naam, etappe_volgnummer, evenement_id):
-    with sqlite3.connect(DB_PATH) as conn:
+    with closing(sqlite3.connect(DB_PATH)) as conn, conn:
         conn.execute('''
           INSERT INTO WISSELPUNTEN (ID, WISSELPUNT_NAAM, ETAPPE_VOLGNUMMER, EVENEMENT_ID)
           VALUES (?, ?, ?, ?)
@@ -128,7 +137,7 @@ def insert_wisselpunt(wisselpunt_id, wisselpunt_naam, etappe_volgnummer, eveneme
         ''', (wisselpunt_id, wisselpunt_naam, etappe_volgnummer, evenement_id))
 
 def get_wisselpunten(evenement_id):
-    with sqlite3.connect(DB_PATH) as conn:
+    with closing(sqlite3.connect(DB_PATH)) as conn, conn:
         conn.row_factory = sqlite3.Row
 
         cursor = conn.execute('''
@@ -146,7 +155,7 @@ def get_wisselpunten(evenement_id):
         }
 
 def get_wisselpunt_by_etappe(evenement_id, etappe_volgnummer):
-    with sqlite3.connect(DB_PATH) as conn:
+    with closing(sqlite3.connect(DB_PATH)) as conn, conn:
         cursor = conn.execute('''
             SELECT WISSELPUNT_NAAM
             FROM WISSELPUNTEN
@@ -162,7 +171,7 @@ def get_wisselpunt_by_etappe(evenement_id, etappe_volgnummer):
     return None
 
 def insert_ploeg(ploeg_id, ploegnummer, ploeg_naam, evenement_id):
-    with sqlite3.connect(DB_PATH) as conn:
+    with closing(sqlite3.connect(DB_PATH)) as conn, conn:
         conn.execute('''
           INSERT INTO PLOEGLIJST (PLOEG_ID, PLOEGNUMMER, PLOEG_NAAM, EVENEMENT_ID)
           VALUES (?, ?, ?, ?)
@@ -173,7 +182,7 @@ def insert_ploeg(ploeg_id, ploegnummer, ploeg_naam, evenement_id):
         ''', (ploeg_id, ploegnummer, ploeg_naam, evenement_id))
 
 def insert_evenement(evenement_id, evenement_naam):
-    with sqlite3.connect(DB_PATH) as conn:
+    with closing(sqlite3.connect(DB_PATH)) as conn, conn:
         conn.execute('''
           INSERT INTO EVENEMENTEN (EVENEMENT_ID, EVENEMENT_NAAM)
           VALUES (?, ?)
@@ -182,7 +191,7 @@ def insert_evenement(evenement_id, evenement_naam):
         ''', (evenement_id, evenement_naam))
 
 def insert_instelling(instelling_naam, instelling_waarde):
-    with sqlite3.connect(DB_PATH) as conn:
+    with closing(sqlite3.connect(DB_PATH)) as conn, conn:
         conn.execute('''
           INSERT INTO INSTELLINGEN (INSTELLING_NAAM, INSTELLING_WAARDE)
           VALUES (?, ?)
@@ -191,7 +200,7 @@ def insert_instelling(instelling_naam, instelling_waarde):
         ''', (instelling_naam, instelling_waarde))
 
 def get_instelling(instelling_naam):
-    with sqlite3.connect(DB_PATH) as conn:
+    with closing(sqlite3.connect(DB_PATH)) as conn, conn:
         cursor = conn.execute('''
             SELECT INSTELLING_WAARDE
             FROM INSTELLINGEN
@@ -206,7 +215,7 @@ def get_instelling(instelling_naam):
         return None
 
 def get_missende_ploegen(evenement_id, etappe_volgnummer):
-    with sqlite3.connect(DB_PATH) as conn:
+    with closing(sqlite3.connect(DB_PATH)) as conn, conn:
         conn.row_factory = sqlite3.Row
 
         cursor = conn.execute('''
