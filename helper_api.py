@@ -16,9 +16,6 @@ def insert_doorkomst(EVENEMENT_ID, etappeVolgnummer, ploegNummer, doorkomstTijd,
 
     response = requests.post(url=api, json=payload, headers=headers, timeout=10)
 
-    # print(f"[insert_doorkomst] status={response.status_code}")
-    print(response.text)
-
     return response.json()
 
 # Nog bedenken hoe om te gaan met de startnummers welke ploeg, etappe afhankelijk zijn

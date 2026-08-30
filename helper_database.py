@@ -7,7 +7,6 @@ from pathlib import Path
 DB_PATH = Path(__file__).with_name("Veluweloop_DB")
 EXPORT_DIR = Path(__file__).with_name("exports")
 
-
 def create_tables():
     # sql code nog loskoppelen van de rest van de code, zodat het makkelijker is om de database te wijzigen
     with closing(sqlite3.connect(DB_PATH)) as conn, conn:
@@ -276,7 +275,7 @@ def export_all_tables_to_csv(output_dir=None):
 
 if __name__ == "__main__":
     print_schema()
-#    clear_wisselpunten()
+    clear_doorkomsten()
     export_all_tables_to_csv()
 
     

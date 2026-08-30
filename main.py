@@ -53,11 +53,25 @@ def update_background():
             ploeg["PLOEGNAAM"],
             ploeg["EVENEMENT_ID"]
         )
+    update_live_doorkomsten() #update all doorkomsten which are not yet synced with the server
+
+# update status on succes
+def update_live_doorkomsten():
+    doorkomsten_local = helper_database.get_doorkomsten()
+    for doorkomst in doorkomsten_local:
+        print(doorkomst)
+        if doorkomst["STATUS"] == "NOSYNC":
+            reponse = helper_api.insert_doorkomst(
+                EVENEMENT_ID = doorkomst["EVENEMENT_ID"],
+                etappeVolgnummer = doorkomst["ETAPPE_VOLGNUMMER"],
+                ploegNummer = doorkomst["PLOEG"],
+                doorkomstTijd = doorkomst["DATETIME"],
+                api = "https://veluweloop.nl/api/doorkomst_invoer.php",
+                api_key = helper_database.get_instelling('API_KEY')
+            )
+            print(reponse)
 
 
-def update_doorkomsten():
-    helper_database.get_doorkomsten
-    None
 
 def flaskThread(): #function to start local webserver
     webapp.webapp.app.run(host="0.0.0.0", threaded=True, debug = False) #start webserver on all interfaces, with threading enabled and debug mode enabled
@@ -100,6 +114,6 @@ if __name__ == '__main__':
     threading.Thread(target=flaskThread).start() #start theard for webserver
     while True:
         update_background()
-        time.sleep(1)
+        time.sleep(30)
 
 # threading.Thread(target=bufferloop_thread).start() #start thread for background handeling
