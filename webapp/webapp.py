@@ -58,7 +58,6 @@ def invoerendoorkomst():
         else:
             print(">>> ERROR: event_trigger is not connected!")
 
-
     return render_template("invoeren_doorkomst.html", title= title)
 
 @app.route("/doorkomsten_fragment")
@@ -71,28 +70,54 @@ def doorkomsten_fragment():
     
     return render_template("table_doorkomst.html", doorkomsten=doorkomsten)
 
-# vrote update nodig
+# update voor mv op etappe is nodig
 @app.route("/invoerenwijziging", methods = ['POST', 'GET'])
 def invoerenwijzging():
     title = "Invoeren Wijzigingen"
 
     if request.method == 'POST':
         if request.form['action'] == "doorkomst":
-            team = request.form['team_insert']
+            ploegNummer = request.form['team_insert']
+            evenement_id = helper_database.get_instelling('EVENEMENT_ID')
+            etappeVolgnummer = helper_database.get_instelling('ETAPPE_VOLGNUMMER')
             datetime_current = (request.form['time_insert'] + request.form['timezone'])
             datetime_current = datetime.datetime.strptime(datetime_current, '%Y-%m-%dT%H:%M:%S%z').isoformat()
 
-            buffer_temp = (datetime_current, team, "NA") #combine al data into a single variable
+            # insert doorkomt in database
+            helper_database.insert_doorkomst(
+                datetime = datetime_current, 
+                ploeg = ploegNummer, 
+                ETAPPE_VOLGNUMMER = etappeVolgnummer, 
+                status = "NOSYNC", 
+                evenement_id = evenement_id,   
+            )
 
-            webserver().buffer.append(buffer_temp) 
+            if event_trigger is not None:
+                event_trigger.set() #trigger the background tasks to upload the new doorkomst
+                print("Event trigger set, background tasks will be executed")
+            else:
+                print(">>> ERROR: event_trigger is not connected!")
 
         if request.form['action'] == "mv":
-            team = request.form['team_insert_mv']
+            ploegNummer = request.form['team_insert_mv']
+            evenement_id = helper_database.get_instelling('EVENEMENT_ID')
+            etappeVolgnummer = helper_database.get_instelling('ETAPPE_VOLGNUMMER')
             datetime_current = datetime.datetime.now().astimezone().replace(microsecond=0).isoformat() #current system datetime
 
-            buffer_temp = (datetime_current, team, "MV")
-        
-            webserver().buffer.append(buffer_temp)
+            # insert doorkomt in database
+            helper_database.insert_consequentie(
+                datetime = datetime_current, 
+                ploeg = ploegNummer, 
+                ETAPPE_VOLGNUMMER = etappeVolgnummer, 
+                status = "NOSYNC", 
+                evenement_id = evenement_id,   
+            )
+            
+            if event_trigger is not None:
+                event_trigger.set() #trigger the background tasks to upload the new doorkomst
+                print("Event trigger set, background tasks will be executed")
+            else:
+                print(">>> ERROR: event_trigger is not connected!")
 
         else:
             print("else") 
