@@ -1,3 +1,4 @@
+from asyncio import timeout
 from cmath import isnan
 from datetime import datetime
 from os import system
@@ -15,6 +16,8 @@ import config #import the config of the app
 import webapp.webapp #local webserver for entering manual data
 import helper_database #import the database_init of the app
 import helper_api #import helpder function for api interaction with external servers
+
+event_trigger = threading.Event() #create event trigger for background tasks
 
 def on_boot():
 #    print('boot')
@@ -53,25 +56,36 @@ def update_background():
             ploeg["PLOEGNAAM"],
             ploeg["EVENEMENT_ID"]
         )
-    update_live_doorkomsten() #update all doorkomsten which are not yet synced with the server
+    # update_live_doorkomsten() #update all doorkomsten which are not yet synced with the server
 
 # update status on succes
 def update_live_doorkomsten():
     doorkomsten_local = helper_database.get_doorkomsten()
     for doorkomst in doorkomsten_local:
-        print(doorkomst)
-        if doorkomst["STATUS"] == "NOSYNC":
-            reponse = helper_api.insert_doorkomst(
-                EVENEMENT_ID = doorkomst["EVENEMENT_ID"],
-                etappeVolgnummer = doorkomst["ETAPPE_VOLGNUMMER"],
-                ploegNummer = doorkomst["PLOEG"],
-                doorkomstTijd = doorkomst["DATETIME"],
-                api = "https://veluweloop.nl/api/doorkomst_invoer.php",
-                api_key = helper_database.get_instelling('API_KEY')
-            )
-            print(reponse)
-
-
+        try:
+            if doorkomst["STATUS"] == "NOSYNC":
+                print(doorkomst)
+                reponse = helper_api.insert_doorkomst(
+                    EVENEMENT_ID = doorkomst["EVENEMENT_ID"],
+                    etappeVolgnummer = doorkomst["ETAPPE_VOLGNUMMER"],
+                    ploegNummer = doorkomst["PLOEG"],
+                    doorkomstTijd = doorkomst["DATETIME"],
+                    api = "https://veluweloop.nl/api/doorkomst_invoer.php",
+                    api_key = helper_database.get_instelling('API_KEY')
+                )
+                print(reponse)
+                helper_database.insert_doorkomst(
+                    id_local = doorkomst["ID_LOCAL"],
+                    id_server = reponse["doorkomst"]["DOORKOMST_ID"],
+                    datetime = doorkomst["DATETIME"],
+                    ploeg = doorkomst["PLOEG"],
+                    ETAPPE_VOLGNUMMER = doorkomst["ETAPPE_VOLGNUMMER"],
+                    status = "SYNC",
+                    evenement_id = doorkomst["EVENEMENT_ID"],
+                    local_change = 0
+                )
+        except:
+            print("Error while updating doorkomsten, will try again next time")
 
 def flaskThread(): #function to start local webserver
     webapp.webapp.app.run(host="0.0.0.0", threaded=True, debug = False) #start webserver on all interfaces, with threading enabled and debug mode enabled
@@ -111,9 +125,13 @@ def bufferloop_thread():
 if __name__ == '__main__':
     config.config_create() #create config file if absent
     on_boot() #action that needs to happen on boot of script
-    threading.Thread(target=flaskThread).start() #start theard for webserver
+    webapp.webapp.event_trigger = event_trigger #connect the event trigger to the webserver
+    threading.Thread(
+        target=flaskThread,
+        daemon=True).start() #start theard for webserver
     while True:
-        update_background()
-        time.sleep(30)
-
+        event_trigger.wait(timeout=30) #wait for event trigger
+        event_trigger.clear() #clear event trigger
+        update_live_doorkomsten() #update all doorkomsten which are not yet synced with the server
+        update_background() #load all data from the server and insert it in the database
 # threading.Thread(target=bufferloop_thread).start() #start thread for background handeling

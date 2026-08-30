@@ -102,8 +102,7 @@ def insert_doorkomst(datetime, ploeg, ETAPPE_VOLGNUMMER, status, evenement_id, i
 
 def get_doorkomsten(evenement_id=None, etappe_volgnummer=None):
     with closing(sqlite3.connect(DB_PATH)) as conn, conn:
-        conn.row_factory = sqlite3.Row
-
+        conn.row_factory = sqlite3.Row    
         if evenement_id is None or etappe_volgnummer is None:
             cursor = conn.execute('''
                 SELECT *

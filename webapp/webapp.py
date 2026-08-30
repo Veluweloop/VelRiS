@@ -7,9 +7,11 @@ import csv
 
 import helper_database #import the database_init of the app
 import config #import the config of the app
-import main #import the main.py file
+# import main #import the main.py file
 
 app = Flask(__name__)
+
+event_trigger = None #event trigger for background tasks, will be set in main.py
 
 # is de bufferloop nog steeds nodig, is het niet handiger om direct in de database weg te scrhijven?
 class webserver:
@@ -50,6 +52,13 @@ def invoerendoorkomst():
             status = "NOSYNC", 
             evenement_id = evenement_id,   
         )
+
+        if event_trigger is not None:
+            event_trigger.set() #trigger the background tasks to upload the new doorkomst
+            print("Event trigger set, background tasks will be executed")
+        else:
+            print(">>> ERROR: event_trigger is not connected!")
+
 
     return render_template("invoeren_doorkomst.html", title= title)
 
