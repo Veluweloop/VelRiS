@@ -90,37 +90,6 @@ def update_live_doorkomsten():
 def flaskThread(): #function to start local webserver
     webapp.webapp.app.run(host="0.0.0.0", threaded=True, debug = False) #start webserver on all interfaces, with threading enabled and debug mode enabled
 
-
-# heeft nog een grote update nodig, wordt de functie waarin alle achtergrond taken worden uitgevoerd, zoals het uploaden van data die niet gelukt is bij de eerste poging, en het downloaden van nieuwe data van de cloud
-def bufferloop_thread():  
-    while True: #start endless loop
-
-        # interval for all background actions, like uploading data which failed on the original attempt, and downloading new data from the cloud
-        update_interval = config.config_read()["system"]["update_interval"] #get current update interval
-
-        # get lost off all failed uploads
-        try:
-            doorkomsten_list = []
-            for doorkomst in doorkomsten_list:
-                # insert_doorkomst(EVENEMENT_ID, etappeVolgnummer, ploegNummer, doorkomstTijd, api, api_key)
-                pass
-        except:
-            print("Failed to upload doorkomsten")
-
-        #functie voor het opvragen van alle doorkomsten van de cloud
-        try:
-            helper_api.load_doorkomsten()
-        except:
-            print("Failed to load doorkomsten")
-
-        try:
-            helper_api.load_competitioninfo()
-        except:
-            print("Failed to load competition info")
-
-        time.sleep(update_interval) #wait update interval
-        
-
 # threads ombouwen naar processes, zodat de webserver niet wordt geblokkeerd door de andere taken, en de andere taken niet worden geblokkeerd door de webserver
 if __name__ == '__main__':
     config.config_create() #create config file if absent
