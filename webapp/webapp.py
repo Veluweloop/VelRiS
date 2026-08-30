@@ -7,7 +7,6 @@ import csv
 
 import helper_database #import the database_init of the app
 import config #import the config of the app
-# import main #import the main.py file
 
 app = Flask(__name__)
 
@@ -126,6 +125,7 @@ def instellingen():
             helper_database.insert_instelling('EVENEMENT_ID', evenement_id)
 
             # Download/load data for the new event
+            import main
             main.update_background()
 
             return redirect(url_for("instellingen"))

@@ -25,8 +25,6 @@ def on_boot():
     update_background() #load all data from the server and insert it in the database
 
 # ik heb hier een loop nodig die de data opvraagd vanuit de api en het wegschrijft in de database
-# de background updates gaan schedulen op basis van een cronjob
-# ik mis de optie voor het uploaden van de doorkomsten die niet gelukt zijn bij de eerste poging, en het downloaden van nieuwe data van de server
 # toevoegen van try statements om te voorkomen dat de hele loop stopt bij een fout
 def update_background():
 
@@ -56,7 +54,6 @@ def update_background():
             ploeg["PLOEGNAAM"],
             ploeg["EVENEMENT_ID"]
         )
-    # update_live_doorkomsten() #update all doorkomsten which are not yet synced with the server
 
 # update status on succes
 def update_live_doorkomsten():
