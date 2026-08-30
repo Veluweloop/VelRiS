@@ -18,6 +18,23 @@ def insert_doorkomst(EVENEMENT_ID, etappeVolgnummer, ploegNummer, doorkomstTijd,
 
     return response.json()
 
+def insert_consequentie_mv(EVENEMENT_ID, etappeVolgnummer, ploegNummer, api, api_key):
+    # format for doorkomsttijd: "YYYY-MM-DDTHH:MM:SS"
+    payload = {
+        "EVENEMENT_ID": EVENEMENT_ID,
+        "etappeVolgnummer": etappeVolgnummer,
+        "ploegNummer": ploegNummer,
+    }
+
+    headers = {
+        "Content-Type": "application/json",
+        "X-API-Key": api_key
+    }
+
+    response = requests.post(url=api, json=payload, headers=headers, timeout=10)
+
+    return response.json()
+
 # Nog bedenken hoe om te gaan met de startnummers welke ploeg, etappe afhankelijk zijn
 # ik heb hiervoor de tabel ploeg_startnummer nodig, dan is het goed te doen
 def update_doorkomst(DOORKOMST_ID, EVENEMENT_ID, etappeVolgnummer, ploegNummer, startnummer,doorkomstTijd, api, api_key):
