@@ -122,7 +122,7 @@ if __name__ == '__main__':
     while True:
         event_trigger.wait(timeout=30) #wait for event trigger
         event_trigger.clear() #clear event trigger
-        # update_live_doorkomsten() #update all doorkomsten which are not yet synced with the server
+        update_live_doorkomsten() #update all doorkomsten which are not yet synced with the server
         update_consequenties()
         update_background() #load all data from the server and insert it in the database
 # threading.Thread(target=bufferloop_thread).start() #start thread for background handeling
