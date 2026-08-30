@@ -84,6 +84,23 @@ def update_live_doorkomsten():
         except:
             print("Error while updating doorkomsten, will try again next time")
 
+def update_consequenties():
+    consequenties_local = helper_database.get_consequenties()
+    for consequentie in consequenties_local:
+        try:
+            if consequentie["STATUS"] == "NOSYNC":
+                print(consequentie)
+                reponse = helper_api.insert_consequentie_mv(
+                    EVENEMENT_ID = consequentie["EVENEMENT_ID"],
+                    etappeVolgnummer = consequentie["ETAPPE_VOLGNUMMER"],
+                    ploegNummer = consequentie["PLOEG"],
+                    api = "https://veluweloop.nl/api/invoer_consequentie.php",
+                    api_key = helper_database.get_instelling('API_KEY')
+                )
+                print(reponse)
+        except:
+            print("Error while updating consequenties, will try again next time")
+
 def flaskThread(): #function to start local webserver
     webapp.webapp.app.run(host="0.0.0.0", threaded=True, debug = False) #start webserver on all interfaces, with threading enabled and debug mode enabled
 
@@ -99,5 +116,6 @@ if __name__ == '__main__':
         event_trigger.wait(timeout=30) #wait for event trigger
         event_trigger.clear() #clear event trigger
         update_live_doorkomsten() #update all doorkomsten which are not yet synced with the server
+        update_consequenties()
         update_background() #load all data from the server and insert it in the database
 # threading.Thread(target=bufferloop_thread).start() #start thread for background handeling

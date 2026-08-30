@@ -157,6 +157,28 @@ def insert_consequentie(datetime, ploeg, ETAPPE_VOLGNUMMER, status, evenement_id
                 LOCAL_CHANGE = excluded.LOCAL_CHANGE
             ''', (id_local, id_server, datetime, ploeg, ETAPPE_VOLGNUMMER, status, evenement_id, local_change_flag))
 
+def get_consequenties(evenement_id=None, etappe_volgnummer=None):
+    with closing(sqlite3.connect(DB_PATH)) as conn, conn:
+        conn.row_factory = sqlite3.Row    
+        if evenement_id is None or etappe_volgnummer is None:
+            cursor = conn.execute('''
+                SELECT *
+                FROM CONSEQUENTIES
+                ORDER BY DATETIME DESC
+            ''')
+        else:
+            cursor = conn.execute('''
+                SELECT *
+                FROM CONSEQUENTIES
+                WHERE EVENEMENT_ID = ?
+                AND ETAPPE_VOLGNUMMER = ?
+                ORDER BY DATETIME DESC
+            ''', (evenement_id, etappe_volgnummer))
+
+        rows = cursor.fetchall()
+
+        return [dict(row) for row in rows]
+
 def insert_wisselpunt(wisselpunt_id, wisselpunt_naam, etappe_volgnummer, evenement_id):
     with closing(sqlite3.connect(DB_PATH)) as conn, conn:
         conn.execute('''
