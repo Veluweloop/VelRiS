@@ -12,14 +12,6 @@ app = Flask(__name__)
 
 event_trigger = None #event trigger for background tasks, will be set in main.py
 
-# is de bufferloop nog steeds nodig, is het niet handiger om direct in de database weg te scrhijven?
-class webserver:
-    buffer = []
-    def __init___(self):
-        pass            
-
-
-#Ploeglijst en instellingen moet nog geladen worden, fix van oude config constructie
 @app.route('/')
 def home():
     title = "Systeem"
@@ -70,7 +62,6 @@ def doorkomsten_fragment():
     
     return render_template("table_doorkomst.html", doorkomsten=doorkomsten)
 
-# update voor mv op etappe is nodig
 @app.route("/invoerenwijziging", methods = ['POST', 'GET'])
 def invoerenwijzging():
     title = "Invoeren Wijzigingen"
@@ -130,7 +121,6 @@ def wijzigingen():
     title = "Wijzigingen"
     return render_template("wijzigingen.html", title= title)
 
-# grote update nodig
 @app.route("/instellingen", methods=['GET', 'POST'])
 def instellingen():
     title = "Instellingen"
