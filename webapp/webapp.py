@@ -6,7 +6,6 @@ import ast
 import csv
 
 import helper_database #import the database_init of the app
-import config #import the config of the app
 
 app = Flask(__name__)
 
@@ -22,7 +21,20 @@ def inject_status():
 @app.route('/')
 def home():
     title = "Systeem"
-    config_load = config.config_read()
+
+    evenement_id = helper_database.get_instelling('EVENEMENT_ID')
+
+    config_load =  {
+            "API_key": helper_database.get_instelling('API_KEY'),
+            "API_competitioninfo": helper_database.get_instelling('API_competitioninfo'),
+            "API_events": helper_database.get_instelling('API_events'),
+            "EVENEMENT_ID": evenement_id,
+            "ETAPPE_VOLGNUMMER": helper_database.get_instelling('ETAPPE_VOLGNUMMER'),
+            "ETAPPE_NAAM": helper_database.get_instelling('WISSELPUNT_NAAM'),
+            "checkpointteam": helper_database.get_instelling('checkpointteam'),
+            "checkpointteam_list": ["wppA", "wppB", "wppC", "wppD"],
+            "ETAPPE_LIST": helper_database.get_wisselpunten(evenement_id)
+        }
     
     # build doorkomsten
     doorkomsten = helper_database.get_doorkomsten(helper_database.get_instelling('EVENEMENT_ID'), helper_database.get_instelling('ETAPPE_VOLGNUMMER'))

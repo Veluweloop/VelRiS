@@ -10,7 +10,6 @@ import pymysql.cursors
 import json
 
 # op termijn verwijderen
-import config #import the config of the app
 
 # hier staan de externe tools welke worden geimporteerd. Helper scripts zijn ondersteunend en de webbapp is the flask server
 import webapp.webapp #local webserver for entering manual data
@@ -113,7 +112,6 @@ def flaskThread(): #function to start local webserver
 
 # threads ombouwen naar processes, zodat de webserver niet wordt geblokkeerd door de andere taken, en de andere taken niet worden geblokkeerd door de webserver
 if __name__ == '__main__':
-    config.config_create() #create config file if absent
     on_boot() #action that needs to happen on boot of script
     webapp.webapp.event_trigger = event_trigger #connect the event trigger to the webserver
     threading.Thread(

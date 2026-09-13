@@ -21,15 +21,15 @@
               <tbody>
                 <tr>
                   <td>Wisselpuntploeg</td>
-                  <td>{{ config_load.competition.checkpointteam }}</td>
+                  <td>{{ config_load.checkpointteam }}</td>
                 </tr>
                 <tr>
                   <td>Etappe</td>
-                  <td>{{ config_load.competition.checkpoint.ETAPPE_NAAM }}</td>
+                  <td>{{ config_load.ETAPPE_NAAM }}</td>
                 </tr>
                 <tr>
                   <td>Internet</td>
-                  <td>{{ config_load.system.internet }}</td>
+                  <td>NOG INVULLEN</td>
                 </tr>
               </tbody>
             </table>
@@ -44,23 +44,7 @@
                 <th>Startgroep</th>
               </tr>
 
-              {% for ploeg in config_load.competition.team_list %}
-                <tr>
-                  <td>
-                    {{ ploeg.PLOEGNUMMER }}   
-                  </td>
-                  <td>
-                    {{ ploeg.PLOEGNAAM }}
-                  </td>
-                  <td>
-                    {{ ploeg.KLASSEMENT }}
-                  </td>
-                  <td>
-                    {{ ploeg.STARTGROEP }}
-                  </td>
-                </tr>
-
-              {% endfor %}  
+PLOEGLIJST INVULLEN middels forloop
             </table>
             
 
@@ -73,20 +57,7 @@
                 <th>Sync</th>
               </tr>
 
-              {% for doorkomst in doorkomsten %}
-                <tr>
-                  <td>
-                    {{doorkomst["DATETIME"]}}
-                  </td>
-                  <td>
-                    {{doorkomst["PLOEG"]}}
-                  </td>
-                  <td>
-                    {{doorkomst["STATUS"]}}
-                  </td>
-                </tr>
-              
-              {% endfor %}  
+DOORKOMSTEN INVULLEN middels forloop               
             </table>
           </div>
         </div>
@@ -98,17 +69,7 @@
               <th>Ploegnaam</th>
             </tr>
 
-            {% for ploeg in missende_ploeg %}
-            <tr>
-              <td>
-                {{ploeg.PLOEGNUMMER}}
-              </td>
-              <td>
-                {{ploeg.PLOEG_NAAM}}
-              </td>
-            </tr>
-                 
-            {% endfor %}
+MISSENDE PLOEGEN INVULLEN middels forloop
           </table>  
           
         </div>
