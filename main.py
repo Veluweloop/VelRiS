@@ -24,7 +24,7 @@ def on_boot():
     helper_database.create_tables() # build database if it doesnt exist yet
     update_background() #load all data from the server and insert it in the database
 
-# ik heb hier een loop nodig die de data opvraagd vanuit de api en het wegschrijft in de database
+# functie voor het synchroniseren van de algemene informatie van een evenement, zoals de etappes en de ploegen
 # toevoegen van try statements om te voorkomen dat de hele loop stopt bij een fout
 def update_background():
 
