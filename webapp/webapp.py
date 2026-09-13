@@ -12,6 +12,13 @@ app = Flask(__name__)
 
 event_trigger = None #event trigger for background tasks, will be set in main.py
 
+@app.context_processor
+def inject_status():
+    return {
+        "event_status": "Open",
+        "checkpoint_status": "Open"
+    }
+
 @app.route('/')
 def home():
     title = "Systeem"

@@ -9,6 +9,7 @@
         {% else %}
             <title>Veluweloop</title>
         {% endif %}
+
     </head>
 
     <body>
@@ -36,6 +37,8 @@
             <li><a href="/instellingen">Instellingen</a></li>
           </ul>
               
+        {% include 'statusbar.html' %}
+
         {% block content %}{% endblock %}
     
         <script src="static/js/jquery-3.6.0.js"></script>
