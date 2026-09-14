@@ -40,11 +40,14 @@
               <tr>
                 <th>Ploegnummer</th>
                 <th>Ploegnaam</th>
-                <th>Klassement</th>
-                <th>Startgroep</th>
               </tr>
-
-PLOEGLIJST INVULLEN middels forloop
+              {% for ploeg in ploegen %}
+                <tr>
+                  <td>{{ ploeg["PLOEGNUMMER"] }}</td>
+                  <td>{{ ploeg["PLOEG_NAAM"] }}</td>
+                  
+                </tr>
+              {% endfor %}
             </table>
             
 
@@ -56,8 +59,13 @@ PLOEGLIJST INVULLEN middels forloop
                 <th>Ploegnummer</th>
                 <th>Sync</th>
               </tr>
-
-DOORKOMSTEN INVULLEN middels forloop               
+              {% for doorkomst in doorkomsten %}
+                <tr>
+                  <td>{{ doorkomst["DATETIME"] }}</td>
+                  <td>{{ doorkomst["PLOEG"] }}</td>
+                  <td>{{ doorkomst["STATUS"] }}</td>
+                </tr>
+              {% endfor %}
             </table>
           </div>
         </div>
@@ -68,8 +76,12 @@ DOORKOMSTEN INVULLEN middels forloop
               <th>Ploegnummer</th>
               <th>Ploegnaam</th>
             </tr>
-
-MISSENDE PLOEGEN INVULLEN middels forloop
+            {% for ploeg in missende_ploegen %}
+              <tr>
+                <td>{{ ploeg["PLOEGNUMMER"] }}</td>
+                <td>{{ ploeg["PLOEG_NAAM"] }}</td>
+              </tr>
+            {% endfor %}
           </table>  
           
         </div>

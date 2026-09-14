@@ -235,6 +235,21 @@ def insert_ploeg(ploeg_id, ploegnummer, ploeg_naam, evenement_id):
             EVENEMENT_ID = excluded.EVENEMENT_ID
         ''', (ploeg_id, ploegnummer, ploeg_naam, evenement_id))
 
+def get_ploeglijst(evenement_id):
+    with closing(sqlite3.connect(DB_PATH)) as conn, conn:
+        conn.row_factory = sqlite3.Row
+
+        cursor = conn.execute('''
+            SELECT PLOEGNUMMER, PLOEG_NAAM
+            FROM PLOEGLIJST
+            WHERE EVENEMENT_ID = ?
+            ORDER BY PLOEGNUMMER
+        ''', (evenement_id,))
+
+        rows = cursor.fetchall()
+
+        return [dict(row) for row in rows]
+
 def insert_evenement(evenement_id, evenement_naam):
     with closing(sqlite3.connect(DB_PATH)) as conn, conn:
         conn.execute('''
@@ -329,8 +344,9 @@ def export_all_tables_to_csv(output_dir=None):
         conn.close()
 
 if __name__ == "__main__":
-    print_schema()
-    clear_doorkomsten()
-    export_all_tables_to_csv()
+#    print_schema()
+#    clear_doorkomsten()
+#    export_all_tables_to_csv()
+    print(get_missende_ploegen(4, 12))
 
     

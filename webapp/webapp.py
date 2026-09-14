@@ -23,6 +23,7 @@ def home():
     title = "Systeem"
 
     evenement_id = helper_database.get_instelling('EVENEMENT_ID')
+    etappe_volgnummer = helper_database.get_instelling('ETAPPE_VOLGNUMMER')
 
     config_load =  {
             "API_key": helper_database.get_instelling('API_KEY'),
@@ -37,12 +38,12 @@ def home():
         }
     
     # build doorkomsten
-    doorkomsten = helper_database.get_doorkomsten(helper_database.get_instelling('EVENEMENT_ID'), helper_database.get_instelling('ETAPPE_VOLGNUMMER'))
+    doorkomsten = helper_database.get_doorkomsten(evenement_id, etappe_volgnummer)
         
     # build missende ploegen
-    missende_ploeg = helper_database.get_missende_ploegen(helper_database.get_instelling('EVENEMENT_ID'), helper_database.get_instelling('ETAPPE_VOLGNUMMER'))
-        
-    return render_template("systeem_status.html", title = title, config_load = config_load, doorkomsten = doorkomsten, missende_ploeg = missende_ploeg)
+    missende_ploeg = helper_database.get_missende_ploegen(evenement_id, etappe_volgnummer)
+    ploegen = helper_database.get_ploeglijst(evenement_id)
+    return render_template("systeem_status.html", title = title, config_load = config_load, doorkomsten = doorkomsten, missende_ploegen = missende_ploeg, ploegen = ploegen)
 
 @app.route("/invoerendoorkomst", methods = ['POST', 'GET'])
 def invoerendoorkomst():
