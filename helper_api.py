@@ -73,16 +73,12 @@ def ping_webserver(WPP_name, event_id, checkpoint_id, ping_interval, api, api_ke
         "PING_INTERVAL": ping_interval
     }
 
-    print(f"Pinging webserver with payload: {payload}")
-
     headers = {
         "Content-Type": "application/json",
         "X-API-Key": api_key
     }
 
     response = requests.post(url=api, json=payload, headers=headers, timeout=10)
-
-    print(f"Ping response: {response.status_code} - {response.text}")
 
     return response.json()
 
