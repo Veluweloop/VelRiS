@@ -65,6 +65,27 @@ def load_competitioninfo(EVENEMENT_ID, api, api_key):
 
     return response.json()
 
+def ping_webserver(WPP_name, event_id, checkpoint_id, ping_interval, api, api_key):
+    payload = {
+        "WISSELPUNTPLOEG": WPP_name,
+        "EVENEMENT_ID": event_id,
+        "WISSELPUNT_ID": checkpoint_id,
+        "PING_INTERVAL": ping_interval
+    }
+
+    print(f"Pinging webserver with payload: {payload}")
+
+    headers = {
+        "Content-Type": "application/json",
+        "X-API-Key": api_key
+    }
+
+    response = requests.post(url=api, json=payload, headers=headers, timeout=10)
+
+    print(f"Ping response: {response.status_code} - {response.text}")
+
+    return response.json()
+
 if __name__ == "__main__":
     import pprint
 

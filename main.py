@@ -9,8 +9,6 @@ import requests
 import pymysql.cursors
 import json
 
-# op termijn verwijderen
-
 # hier staan de externe tools welke worden geimporteerd. Helper scripts zijn ondersteunend en de webbapp is the flask server
 import webapp.webapp #local webserver for entering manual data
 import helper_database #import the database_init of the app
@@ -53,6 +51,16 @@ def update_background():
             ploeg["PLOEGNAAM"],
             ploeg["EVENEMENT_ID"]
         )
+
+    # ping to webserver
+    helper_api.ping_webserver(
+        WPP_name = helper_database.get_instelling('checkpointteam'),
+        event_id = helper_database.get_instelling('EVENEMENT_ID'),
+        checkpoint_id = helper_database.get_instelling('ETAPPE_VOLGNUMMER'),
+        ping_interval = 30,
+        api = "https://veluweloop.nl/api/ping.php",
+        api_key = helper_database.get_instelling('API_KEY')
+    )
 
 # update status on succes
 def update_live_doorkomsten():
