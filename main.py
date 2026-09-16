@@ -90,6 +90,7 @@ def update_live_doorkomsten():
                 )
         except:
             print("Error while updating doorkomsten, will try again next time")
+        time.sleep(0.5)
 
 def update_consequenties():
     consequenties_local = helper_database.get_consequenties()
@@ -114,6 +115,9 @@ def update_consequenties():
                 )
         except:
             print("Error while updating consequenties, will try again next time")
+
+        time.sleep(0.5)
+
 
 def flaskThread(): #function to start local webserver
     webapp.webapp.app.run(host="0.0.0.0", threaded=True, debug = False) #start webserver on all interfaces, with threading enabled and debug mode enabled

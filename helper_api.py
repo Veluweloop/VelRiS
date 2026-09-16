@@ -1,3 +1,5 @@
+from urllib import response
+
 import requests
 
 def insert_doorkomst(EVENEMENT_ID, etappeVolgnummer, ploegNummer, doorkomstTijd, api, api_key):
@@ -16,7 +18,11 @@ def insert_doorkomst(EVENEMENT_ID, etappeVolgnummer, ploegNummer, doorkomstTijd,
 
     response = requests.post(url=api, json=payload, headers=headers, timeout=10)
 
-    return response.json()
+    try:
+        return response.json()
+    except requests.exceptions.JSONDecodeError:
+        print("API did not return valid JSON.")
+        return None
 
 def insert_consequentie_mv(EVENEMENT_ID, etappeVolgnummer, ploegNummer, api, api_key):
     # format for doorkomsttijd: "YYYY-MM-DDTHH:MM:SS"
@@ -33,7 +39,11 @@ def insert_consequentie_mv(EVENEMENT_ID, etappeVolgnummer, ploegNummer, api, api
 
     response = requests.post(url=api, json=payload, headers=headers, timeout=10)
 
-    return response.json()
+    try:
+        return response.json()
+    except requests.exceptions.JSONDecodeError:
+        print("API did not return valid JSON.")
+        return None
 
 # Nog bedenken hoe om te gaan met de startnummers welke ploeg, etappe afhankelijk zijn
 # ik heb hiervoor de tabel ploeg_startnummer nodig, dan is het goed te doen
@@ -50,7 +60,11 @@ def update_doorkomst(DOORKOMST_ID, EVENEMENT_ID, etappeVolgnummer, ploegNummer, 
 def load_events(api):
     response = requests.get(url=api, timeout=10)
 
-    return response.json()
+    try:
+        return response.json()
+    except requests.exceptions.JSONDecodeError:
+        print("API did not return valid JSON.")
+        return None
 
 # functie voor het opvragen van de ploeglijst, etappe's en in de databse te stoppen
 def load_competitioninfo(EVENEMENT_ID, api, api_key):
@@ -61,9 +75,11 @@ def load_competitioninfo(EVENEMENT_ID, api, api_key):
 
     response = requests.get(url=api, params={"EVENEMENT_ID": EVENEMENT_ID}, headers=headers, timeout=10)
 
-#    print(response.text)
-
-    return response.json()
+    try:
+        return response.json()
+    except requests.exceptions.JSONDecodeError:
+        print("API did not return valid JSON.")
+        return None
 
 def ping_webserver(WPP_name, event_id, checkpoint_id, ping_interval, api, api_key):
     payload = {
@@ -80,7 +96,11 @@ def ping_webserver(WPP_name, event_id, checkpoint_id, ping_interval, api, api_ke
 
     response = requests.post(url=api, json=payload, headers=headers, timeout=10)
 
-    return response.json()
+    try:
+        return response.json()
+    except requests.exceptions.JSONDecodeError:
+        print("API did not return valid JSON.")
+        return None
 
 if __name__ == "__main__":
     import pprint
