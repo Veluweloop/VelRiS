@@ -159,9 +159,11 @@ def instellingen():
             helper_database.insert_instelling('API_events', request.form['API_events'])
             helper_database.insert_instelling('EVENEMENT_ID', evenement_id)
 
-            # Download/load data for the new event
-            import main
-            main.update_background()
+            if event_trigger is not None:
+                event_trigger.set() #trigger the background tasks to upload the new doorkomst
+                print("Event trigger set, background tasks will be executed")
+            else:
+                print(">>> ERROR: event_trigger is not connected!")
 
             return redirect(url_for("instellingen"))
 
@@ -176,6 +178,12 @@ def instellingen():
             helper_database.insert_instelling('ETAPPE_VOLGNUMMER', etappe_volgnummer)
             helper_database.insert_instelling('WISSELPUNT_NAAM', wisselpunt_naam)
             helper_database.insert_instelling('checkpointteam', request.form['checkpointteam'])
+
+            if event_trigger is not None:
+                event_trigger.set() #trigger the background tasks to upload the new doorkomst
+                print("Event trigger set, background tasks will be executed")
+            else:
+                print(">>> ERROR: event_trigger is not connected!")
 
             return redirect(url_for("instellingen"))
 
