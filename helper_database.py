@@ -4,7 +4,7 @@ from contextlib import closing
 from datetime import datetime
 from pathlib import Path
 
-DB_PATH = Path(__file__).with_name("Veluweloop_DB")
+DB_PATH = Path(__file__).with_name("Veluweloop_DB.db")
 EXPORT_DIR = Path(__file__).with_name("exports")
 
 def create_tables():
