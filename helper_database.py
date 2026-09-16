@@ -345,8 +345,8 @@ def export_all_tables_to_csv(output_dir=None):
 
 if __name__ == "__main__":
 #    print_schema()
-#    clear_doorkomsten()
-#    export_all_tables_to_csv()
-    print(get_missende_ploegen(4, 12))
+    clear_doorkomsten()
+    export_all_tables_to_csv()
+#    print(get_missende_ploegen(4, 12))
 
     
