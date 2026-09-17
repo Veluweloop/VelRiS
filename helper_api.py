@@ -24,6 +24,50 @@ def insert_doorkomst(EVENEMENT_ID, etappeVolgnummer, ploegNummer, doorkomstTijd,
         print("API did not return valid JSON.")
         return None
 
+def insert_doorkomsten(doorkomsten, api, api_key):
+    """
+    Send multiple doorkomsten to the API in one request.
+
+    doorkomsten should be a list of dictionaries, for example:
+
+    [
+        {
+            "EVENEMENT_ID": 123,
+            "etappeVolgnummer": 1,
+            "ploegNummer": 12,
+            "doorkomstTijd": "2026-08-20T21:54:06+02:00"
+        },
+        ...
+    ]
+
+    Returns the decoded JSON response, or None if the request failed.
+    """
+
+    headers = {
+        "X-API-Key": api_key,
+        "Content-Type": "application/json"
+    }
+
+    try:
+        response = requests.post(
+            api,
+            json=doorkomsten,
+            headers=headers,
+            timeout=30
+        )
+
+        response.raise_for_status()
+
+        return response.json()
+
+    except requests.RequestException as e:
+        print(f"Error while sending doorkomsten: {e}")
+        return None
+
+    except ValueError as e:
+        print(f"Error while decoding API response: {e}")
+        return None
+
 def insert_consequentie_mv(EVENEMENT_ID, etappeVolgnummer, ploegNummer, api, api_key):
     # format for doorkomsttijd: "YYYY-MM-DDTHH:MM:SS"
     payload = {

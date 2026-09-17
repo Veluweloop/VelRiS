@@ -93,6 +93,107 @@ def update_live_doorkomsten():
             print("Error while updating doorkomsten, will try again next time")
         time.sleep(0.5)
 
+def update_doorkomsten_batch():
+
+    doorkomsten_local = helper_database.get_doorkomsten()
+    # Only take records that still need to be synchronized
+    doorkomsten_local = [
+        doorkomst
+        for doorkomst in doorkomsten_local
+        if doorkomst["STATUS"] == "NOSYNC"
+    ]
+
+    if not doorkomsten_local:
+        return
+
+    # Send records in batches
+    batch_size = 50
+
+    for batch_start in range(0, len(doorkomsten_local), batch_size):
+
+        batch = doorkomsten_local[
+            batch_start:batch_start + batch_size
+        ]
+
+        # Build the API payload.
+        #
+        # ID_LOCAL is deliberately NOT sent to the API.
+        api_batch = []
+
+        for doorkomst in batch:
+            api_batch.append({
+                "EVENEMENT_ID": doorkomst["EVENEMENT_ID"],
+                "etappeVolgnummer": doorkomst["ETAPPE_VOLGNUMMER"],
+                "ploegNummer": doorkomst["PLOEG"],
+                "doorkomstTijd": doorkomst["DATETIME"]
+            })
+
+        response = helper_api.insert_doorkomsten(
+            doorkomsten=api_batch,
+            api="https://veluweloop.nl/api/invoer_doorkomst_batch.php",
+            api_key=helper_database.get_instelling("API_KEY")
+        )
+
+        # If the API request itself failed, leave everything as NOSYNC.
+        if response is None:
+            print(
+                "API request failed. "
+                "Doorkomsten will remain NOSYNC."
+            )
+            continue
+
+        # Check that the response contains the expected batch results.
+        if "results" not in response:
+            print(
+                "Invalid API response. "
+                "Doorkomsten will remain NOSYNC."
+            )
+            continue
+
+        # Process each result.
+        for index, result in enumerate(response["results"]):
+
+            # Make sure the API didn't return an invalid index.
+            if index >= len(batch):
+                print(
+                    f"Unexpected API result index: {index}"
+                )
+                continue
+
+            doorkomst = batch[index]
+
+            if result.get("success"):
+
+                print(
+                    f"Doorkomst {doorkomst['ID_LOCAL']} "
+                    f"successfully synchronized."
+                )
+
+                helper_database.insert_doorkomst(
+                    id_local=doorkomst["ID_LOCAL"],
+                    id_server=None,
+                    datetime=doorkomst["DATETIME"],
+                    ploeg=doorkomst["PLOEG"],
+                    ETAPPE_VOLGNUMMER=doorkomst["ETAPPE_VOLGNUMMER"],
+                    status="SYNC",
+                    evenement_id=doorkomst["EVENEMENT_ID"],
+                    local_change=0
+                )
+
+            else:
+
+                print(
+                    f"Doorkomst {doorkomst['ID_LOCAL']} "
+                    f"failed to synchronize: "
+                    f"{result.get('error', 'Unknown error')}"
+                )
+
+        print(
+            f"Batch finished: "
+            f"{response.get('successful', 0)} successful, "
+            f"{response.get('failed', 0)} failed"
+        )
+
 def update_consequenties():
     consequenties_local = helper_database.get_consequenties()
     for consequentie in consequenties_local:
@@ -134,8 +235,9 @@ if __name__ == '__main__':
         event_trigger.wait(timeout=30) #wait for event trigger
         event_trigger.clear() #clear event trigger
         try:
-            update_live_doorkomsten() #update all doorkomsten which are not yet synced with the server
-            update_consequenties()
+#            update_live_doorkomsten() #update all doorkomsten which are not yet synced with the server
+            update_doorkomsten_batch() #update all doorkomsten which are not yet synced with the server
+#            update_consequenties()
             update_background() #load all data from the server and insert it in the database
         except Exception as e:
             print(f"Error occurred: {e}")
