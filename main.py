@@ -19,7 +19,7 @@ event_trigger = threading.Event() #create event trigger for background tasks
 def on_boot():
 #    print('boot')
     helper_database.create_tables() # build database if it doesnt exist yet
-    update_background() #load all data from the server and insert it in the database
+    event_trigger.set()
 
 # functie voor het synchroniseren van de algemene informatie van een evenement, zoals de etappes en de ploegen
 # toevoegen van try statements om te voorkomen dat de hele loop stopt bij een fout
@@ -74,7 +74,8 @@ def update_live_doorkomsten():
                     etappeVolgnummer = doorkomst["ETAPPE_VOLGNUMMER"],
                     ploegNummer = doorkomst["PLOEG"],
                     doorkomstTijd = doorkomst["DATETIME"],
-                    api = "https://veluweloop.nl/api/doorkomst_invoer.php",
+#                    api = "https://veluweloop.nl/api/doorkomst_invoer.php",
+                    api = "https://veluweloop.nl/api/invoer_doorkomst_batch.php",
                     api_key = helper_database.get_instelling('API_KEY')
                 )
                 print(reponse)
@@ -120,7 +121,7 @@ def update_consequenties():
 
 
 def flaskThread(): #function to start local webserver
-    webapp.webapp.app.run(host="0.0.0.0", threaded=True, debug = False) #start webserver on all interfaces, with threading enabled and debug mode enabled
+    webapp.webapp.app.run(host="0.0.0.0", threaded=True, debug = False) #start webserver on all interfaces, with threading enabled and debug mode disabled
 
 # threads ombouwen naar processes, zodat de webserver niet wordt geblokkeerd door de andere taken, en de andere taken niet worden geblokkeerd door de webserver
 if __name__ == '__main__':
@@ -132,7 +133,9 @@ if __name__ == '__main__':
     while True:
         event_trigger.wait(timeout=30) #wait for event trigger
         event_trigger.clear() #clear event trigger
-        update_live_doorkomsten() #update all doorkomsten which are not yet synced with the server
-        update_consequenties()
-        update_background() #load all data from the server and insert it in the database
-# threading.Thread(target=bufferloop_thread).start() #start thread for background handeling
+        try:
+            update_live_doorkomsten() #update all doorkomsten which are not yet synced with the server
+            update_consequenties()
+            update_background() #load all data from the server and insert it in the database
+        except Exception as e:
+            print(f"Error occurred: {e}")
