@@ -1,5 +1,6 @@
 # Local SQLite database
 Veluweloop_DB
+Veluweloop_DB.db
 
 # Python cache
 __pycache__/
