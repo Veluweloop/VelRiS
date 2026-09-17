@@ -5,6 +5,7 @@ from os import system
 import threading
 import csv
 import time
+from turtle import update
 import requests
 import pymysql.cursors
 import json
@@ -227,8 +228,8 @@ def update_consequenties_batch():
     consequenties_local = [
         consequentie
         for consequentie in consequenties_local
-            if consequentie["STATUS"] == "NOSYNC"
-        ]
+        if consequentie["STATUS"] == "NOSYNC"
+    ]
 
     if not consequenties_local:
         return
@@ -245,65 +246,42 @@ def update_consequenties_batch():
             batch_start:batch_start + batch_size
         ]
 
-        # Build API payload.
-        # ID_LOCAL is deliberately NOT sent to the server.
         api_batch = []
 
         for consequentie in batch:
-
             api_batch.append({
-                "EVENEMENT_ID":
-                    consequentie["EVENEMENT_ID"],
-
-                "etappeVolgnummer":
-                    consequentie["ETAPPE_VOLGNUMMER"],
-
-                "ploegNummer":
-                    consequentie["PLOEG"]
+                "EVENEMENT_ID": consequentie["EVENEMENT_ID"],
+                "etappeVolgnummer": consequentie["ETAPPE_VOLGNUMMER"],
+                "ploegNummer": consequentie["PLOEG"]
             })
 
-        print(
-            f"Sending {len(api_batch)} consequenties to API..."
-        )
+        print(f"Sending {len(api_batch)} consequenties to API...")
+        print(api_batch)
 
-        response = helper_api.insert_consequenties(
+        response = helper_api.insert_consequenties_batch(
             consequenties=api_batch,
-            api="https://veluweloop.nl/api/consequentie_invoer.php",
+            api="https://veluweloop.nl/api/invoer_consequentie_batch.php",
             api_key=helper_database.get_instelling("API_KEY")
         )
 
-        # If the HTTP request failed,
-        # leave all records as NOSYNC.
         if response is None:
-
             print(
                 "Consequentie API request failed. "
                 "Records will remain NOSYNC."
             )
-
             continue
 
-        # Validate API response.
         if "results" not in response:
-
             print(
                 "Invalid consequentie API response. "
                 "Records will remain NOSYNC."
             )
-
             continue
 
-        # Process individual results.
-        for index, result in enumerate(
-            response["results"]
-        ):
+        for index, result in enumerate(response["results"]):
 
             if index >= len(batch):
-
-                print(
-                    f"Unexpected API result index: {index}"
-                )
-
+                print(f"Unexpected API result index: {index}")
                 continue
 
             consequentie = batch[index]
@@ -311,28 +289,26 @@ def update_consequenties_batch():
             if result.get("success"):
 
                 print(
-                    f"Consequentie "
-                    f"{consequentie['ID_LOCAL']} "
-                    f"successfully synchronized."
+                    f"Consequentie {consequentie['ID_LOCAL']} "
+                    f"successfully synchronized "
+                    f"({result.get('status', 'unknown')})."
                 )
 
                 helper_database.insert_consequentie(
+                    datetime=consequentie["DATETIME"],
+                    ploeg=consequentie["PLOEG"],
+                    ETAPPE_VOLGNUMMER=consequentie["ETAPPE_VOLGNUMMER"],
+                    status="SYNC",
+                    evenement_id=consequentie["EVENEMENT_ID"],
                     id_local=consequentie["ID_LOCAL"],
                     id_server=None,
-                    evenement_id=consequentie["EVENEMENT_ID"],
-                    ploeg=consequentie["PLOEG"],
-                    ETAPPE_VOLGNUMMER=consequentie[
-                        "ETAPPE_VOLGNUMMER"
-                    ],
-                    status="SYNC",
                     local_change=0
                 )
 
             else:
 
                 print(
-                    f"Consequentie "
-                    f"{consequentie['ID_LOCAL']} "
+                    f"Consequentie {consequentie['ID_LOCAL']} "
                     f"failed to synchronize: "
                     f"{result.get('error', 'Unknown error')}"
                 )
@@ -359,6 +335,7 @@ if __name__ == '__main__':
         event_trigger.clear() #clear event trigger
         try:
             update_doorkomsten_batch() #update all doorkomsten which are not yet synced with the server
+            update_consequenties_batch()
 #            update_consequenties()
             update_background() #load all data from the server and insert it in the database
         except Exception as e:

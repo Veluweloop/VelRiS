@@ -99,6 +99,8 @@ def insert_consequenties_batch(consequenties, api, api_key):
         "Content-Type": "application/json"
     }
 
+    print(consequenties)
+
     try:
         response = requests.post(
             api,
