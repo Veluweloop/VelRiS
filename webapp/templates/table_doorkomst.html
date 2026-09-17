@@ -1,4 +1,7 @@
+<b>Missende ploegen: {{ missende_ploeg_len }} van de {{ ploegen_len }}</b>
+
 <table>
+    <p><b>Doorkomsten</b></p>
     <tr>
         <th>Datum/Tijd</th>
         <th>Ploegnummer</th>
@@ -19,4 +22,24 @@
         </tr>
               
     {% endfor %}  
-</table>        
+</table>
+
+<table>
+    <p><b>Missende ploegen</b></p>
+    <tr>
+        <th>Ploegnummer</th>
+        <th>Ploegnaam</th>
+    </tr>
+
+    {% for ploeg in missende_ploeg %}
+        <tr>
+            <td>
+                {{ploeg["PLOEGNUMMER"]}}
+            </td>
+            <td>
+                {{ploeg["PLOEG_NAAM"]}}
+            </td>
+        </tr>
+              
+    {% endfor %}  
+</table>

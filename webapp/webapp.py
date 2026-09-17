@@ -76,11 +76,15 @@ def invoerendoorkomst():
 def doorkomsten_fragment():
 
     evenement_id = helper_database.get_instelling('EVENEMENT_ID')
-    eteppe_volgnummer = helper_database.get_instelling('ETAPPE_VOLGNUMMER')
+    etappe_volgnummer = helper_database.get_instelling('ETAPPE_VOLGNUMMER')
 
-    doorkomsten = helper_database.get_doorkomsten(evenement_id, eteppe_volgnummer)
+    doorkomsten = helper_database.get_doorkomsten(evenement_id, etappe_volgnummer)
+
+    missende_ploeg = helper_database.get_missende_ploegen(evenement_id, etappe_volgnummer)
+    missende_ploeg_len = len(missende_ploeg)
+    ploegen_len = len(helper_database.get_ploeglijst(evenement_id))
     
-    return render_template("table_doorkomst.html", doorkomsten=doorkomsten)
+    return render_template("table_doorkomst.html", doorkomsten=doorkomsten[:5], missende_ploeg=missende_ploeg, missende_ploeg_len=missende_ploeg_len, ploegen_len=ploegen_len)
 
 @app.route("/invoerenwijziging", methods = ['POST', 'GET'])
 def invoerenwijzging():
