@@ -89,6 +89,36 @@ def insert_consequentie_mv(EVENEMENT_ID, etappeVolgnummer, ploegNummer, api, api
         print("API did not return valid JSON.")
         return None
 
+def insert_consequenties_batch(consequenties, api, api_key):
+    """
+    Send multiple consequenties to the API in one request.
+    """
+
+    headers = {
+        "X-API-Key": api_key,
+        "Content-Type": "application/json"
+    }
+
+    try:
+        response = requests.post(
+            api,
+            json=consequenties,
+            headers=headers,
+            timeout=30
+        )
+
+        response.raise_for_status()
+
+        return response.json()
+
+    except requests.RequestException as e:
+        print(f"Error while sending consequenties: {e}")
+        return None
+
+    except ValueError as e:
+        print(f"Error while decoding API response: {e}")
+        return None
+
 # Nog bedenken hoe om te gaan met de startnummers welke ploeg, etappe afhankelijk zijn
 # ik heb hiervoor de tabel ploeg_startnummer nodig, dan is het goed te doen
 def update_doorkomst(DOORKOMST_ID, EVENEMENT_ID, etappeVolgnummer, ploegNummer, startnummer,doorkomstTijd, api, api_key):

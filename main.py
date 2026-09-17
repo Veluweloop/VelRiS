@@ -220,6 +220,129 @@ def update_consequenties():
 
         time.sleep(0.5)
 
+def update_consequenties_batch():
+
+    consequenties_local = helper_database.get_consequenties()
+
+    consequenties_local = [
+        consequentie
+        for consequentie in consequenties_local
+            if consequentie["STATUS"] == "NOSYNC"
+        ]
+
+    if not consequenties_local:
+        return
+
+    batch_size = 50
+
+    for batch_start in range(
+        0,
+        len(consequenties_local),
+        batch_size
+    ):
+
+        batch = consequenties_local[
+            batch_start:batch_start + batch_size
+        ]
+
+        # Build API payload.
+        # ID_LOCAL is deliberately NOT sent to the server.
+        api_batch = []
+
+        for consequentie in batch:
+
+            api_batch.append({
+                "EVENEMENT_ID":
+                    consequentie["EVENEMENT_ID"],
+
+                "etappeVolgnummer":
+                    consequentie["ETAPPE_VOLGNUMMER"],
+
+                "ploegNummer":
+                    consequentie["PLOEG"]
+            })
+
+        print(
+            f"Sending {len(api_batch)} consequenties to API..."
+        )
+
+        response = helper_api.insert_consequenties(
+            consequenties=api_batch,
+            api="https://veluweloop.nl/api/consequentie_invoer.php",
+            api_key=helper_database.get_instelling("API_KEY")
+        )
+
+        # If the HTTP request failed,
+        # leave all records as NOSYNC.
+        if response is None:
+
+            print(
+                "Consequentie API request failed. "
+                "Records will remain NOSYNC."
+            )
+
+            continue
+
+        # Validate API response.
+        if "results" not in response:
+
+            print(
+                "Invalid consequentie API response. "
+                "Records will remain NOSYNC."
+            )
+
+            continue
+
+        # Process individual results.
+        for index, result in enumerate(
+            response["results"]
+        ):
+
+            if index >= len(batch):
+
+                print(
+                    f"Unexpected API result index: {index}"
+                )
+
+                continue
+
+            consequentie = batch[index]
+
+            if result.get("success"):
+
+                print(
+                    f"Consequentie "
+                    f"{consequentie['ID_LOCAL']} "
+                    f"successfully synchronized."
+                )
+
+                helper_database.insert_consequentie(
+                    id_local=consequentie["ID_LOCAL"],
+                    id_server=None,
+                    evenement_id=consequentie["EVENEMENT_ID"],
+                    ploeg=consequentie["PLOEG"],
+                    ETAPPE_VOLGNUMMER=consequentie[
+                        "ETAPPE_VOLGNUMMER"
+                    ],
+                    status="SYNC",
+                    local_change=0
+                )
+
+            else:
+
+                print(
+                    f"Consequentie "
+                    f"{consequentie['ID_LOCAL']} "
+                    f"failed to synchronize: "
+                    f"{result.get('error', 'Unknown error')}"
+                )
+
+        print(
+            f"Consequentie batch finished: "
+            f"{response.get('successful', 0)} successful, "
+            f"{response.get('failed', 0)} failed"
+        )
+
 
 def flaskThread(): #function to start local webserver
     webapp.webapp.app.run(host="0.0.0.0", threaded=True, debug = False) #start webserver on all interfaces, with threading enabled and debug mode disabled
@@ -235,7 +358,6 @@ if __name__ == '__main__':
         event_trigger.wait(timeout=30) #wait for event trigger
         event_trigger.clear() #clear event trigger
         try:
-#            update_live_doorkomsten() #update all doorkomsten which are not yet synced with the server
             update_doorkomsten_batch() #update all doorkomsten which are not yet synced with the server
 #            update_consequenties()
             update_background() #load all data from the server and insert it in the database
