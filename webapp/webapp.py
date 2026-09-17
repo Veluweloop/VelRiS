@@ -92,7 +92,7 @@ def invoerenwijzging():
             evenement_id = helper_database.get_instelling('EVENEMENT_ID')
             etappeVolgnummer = helper_database.get_instelling('ETAPPE_VOLGNUMMER')
             datetime_current = (request.form['time_insert'] + request.form['timezone'])
-            datetime_current = datetime.datetime.strptime(datetime_current, '%Y-%m-%dT%H:%M:%S%z').isoformat()
+            datetime_current = datetime.datetime.fromisoformat(datetime_current).isoformat()
 
             # insert doorkomt in database
             helper_database.insert_doorkomst(
