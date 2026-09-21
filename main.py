@@ -6,6 +6,7 @@ import threading
 import csv
 import time
 from turtle import update
+import socket
 import requests
 import pymysql.cursors
 import json
@@ -52,6 +53,12 @@ def update_background():
             ploeg["PLOEGNAAM"],
             ploeg["EVENEMENT_ID"]
         )
+
+    # get local ip adres and hortname for the webserver
+    local_ip = socket.gethostbyname(socket.gethostname())
+    hostname = socket.gethostname()
+    helper_database.insert_instelling('local_ip', local_ip)
+    helper_database.insert_instelling('hostname', hostname)
 
     # ping to webserver
     helper_api.ping_webserver(

@@ -34,7 +34,9 @@ def home():
             "ETAPPE_NAAM": helper_database.get_instelling('WISSELPUNT_NAAM'),
             "checkpointteam": helper_database.get_instelling('checkpointteam'),
             "checkpointteam_list": ["wppA", "wppB", "wppC", "wppD"],
-            "ETAPPE_LIST": helper_database.get_wisselpunten(evenement_id)
+            "ETAPPE_LIST": helper_database.get_wisselpunten(evenement_id),
+            "local_ip": helper_database.get_instelling('local_ip'),
+            "hostname": helper_database.get_instelling('hostname')
         }
     
     # build doorkomsten
