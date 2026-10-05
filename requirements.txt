@@ -1,6 +1,5 @@
 asyncio
 datetime
-os
 threading
 csv
 time
