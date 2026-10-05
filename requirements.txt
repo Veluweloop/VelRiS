@@ -1,3 +1,13 @@
-flask
+asyncio
+cmath
+datetime
+os
+threading
+csv
+time
+turtle
+socket
 requests
-pymysql
+pymysql.cursors
+json
+flaSk
