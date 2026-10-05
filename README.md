@@ -7,6 +7,16 @@ de app is gebouwd op basis van Flask met Python 3. Er moet nog een requirements/
 ## eerste keer gebruik
 Bij de eerste keer gebruik (en het wisselen van evenementen) is een internetverbinding noodzakelijk. De app kan gestart worden door main.py te starten. Er is ook een batchfile (@@) beschikbaar waarmee de app gestart kan worden. De gebruikersinterface is gebouwd op basis van html (webbrowser) en na het opstarten van de app kan de gebruikersinterface gestart worden in de browser via localhost:5000
 
+## installatie lubuntu
+sudo apt install -y git python3 python3-pip python3-venv python3-tk curl firefox
+sudo apt install python3-tk
+
+chmod +x start-kiosk.sh
+chmod +x stop-kiosk.sh
+chmod +x install.sh
+
+small update: git pul
+
 ## Systeem opbouw
 ### main.py
 
