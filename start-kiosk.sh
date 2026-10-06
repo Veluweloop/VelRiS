@@ -138,86 +138,37 @@ else
     fi
 fi
 
- ------------------------------------------------------------
+# ------------------------------------------------------------
 # Update application from Git
 # ------------------------------------------------------------
 
-echo "Checking for application updates..."
+echo "Trying to update application from Git..."
 
 cd "$APP_DIR" || {
-    echo "ERROR: Could not enter application directory."
-    exit 1
+    echo "WARNING: Could not enter application directory."
+    echo "Continuing..."
 }
 
-if [ ! -d "$APP_DIR/.git" ]; then
+if [ -d "$APP_DIR/.git" ]; then
 
-    echo "WARNING: $APP_DIR is not a Git repository."
-    echo "Skipping Git update."
+    if git fetch origin master && \
+       git reset --hard origin/master; then
 
-else
-
-    echo "Waiting briefly for network..."
-
-    # Give NetworkManager/DNS some extra time during boot
-    for ((i=1; i<=15; i++)); do
-
-        if git ls-remote origin HEAD >/dev/null 2>&1; then
-            echo "Git remote is reachable."
-            break
-        fi
-
-        echo "Waiting for Git/network ($i/15)..."
-        sleep 2
-
-    done
-
-    # --------------------------------------------------------
-    # Fetch latest master
-    # --------------------------------------------------------
-
-    echo "Fetching latest version from origin/master..."
-
-    if git fetch origin master; then
-
-        echo "Git fetch successful."
-
-        # ----------------------------------------------------
-        # Discard ALL local tracked changes
-        # ----------------------------------------------------
-
-        echo "Discarding local changes..."
-
-        if git reset --hard origin/master; then
-
-            echo "Repository reset to origin/master."
-
-            # ------------------------------------------------
-            # Remove untracked files
-            # ------------------------------------------------
-
-            echo "Removing untracked files..."
-
-            git clean -fd || \
-                echo "WARNING: git clean failed."
-
-            echo "Git update completed."
-
-            echo "Running commit:"
-            git log -1 --oneline
-
-        else
-
-            echo "WARNING: Git reset failed."
-            echo "Starting existing local application."
-
-        fi
+        echo "Git update successful."
+        git log -1 --oneline
 
     else
 
-        echo "WARNING: Git fetch failed."
-        echo "Starting existing local application."
+        echo "WARNING: Git update failed."
+        echo "Continuing with existing application."
 
     fi
+
+else
+
+    echo "WARNING: Not a Git repository."
+    echo "Continuing with existing application."
+
 fi
 
 echo "Checking script permissions..."
