@@ -24,8 +24,8 @@ START_LOG="$LOG_DIR/startup.log"
 # Wi-Fi Configuration
 # ------------------------------------------------------------
 
-WIFI_SSID="YourWiFiName"
-WIFI_PASSWORD="YourWiFiPassword"
+WIFI_SSID="Veluweloop"
+WIFI_PASSWORD="Veluwelopen01"
 
 # How long to wait for Wi-Fi to become available
 WIFI_MAX_ATTEMPTS=30
