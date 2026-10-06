@@ -21,7 +21,12 @@ event_trigger = threading.Event() #create event trigger for background tasks
 def on_boot():
 #    print('boot')
     helper_database.create_tables() # build database if it doesnt exist yet
+    local_ip = socket.gethostbyname(socket.gethostname())
+    hostname = socket.gethostname()
+    helper_database.insert_instelling('local_ip', local_ip)
+    helper_database.insert_instelling('hostname', hostname)
     event_trigger.set()
+
 
 # functie voor het synchroniseren van de algemene informatie van een evenement, zoals de etappes en de ploegen
 # toevoegen van try statements om te voorkomen dat de hele loop stopt bij een fout
