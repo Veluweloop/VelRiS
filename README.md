@@ -16,7 +16,7 @@ small update: git pull
 
 ### hard update
 git fetch origin
-git reset --hard origin/main
+git reset --hard origin/master
 
 ## Systeem opbouw
 ### main.py

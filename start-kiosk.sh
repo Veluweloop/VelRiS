@@ -211,6 +211,12 @@ else
     fi
 fi
 
+echo "Checking script permissions..."
+
+find "$APP_DIR" -maxdepth 1 -type f -name "*.sh" -exec chmod +x {} \;
+
+echo "Shell scripts are executable."
+
 # ------------------------------------------------------------
 # Basic checks
 # ------------------------------------------------------------
