@@ -138,7 +138,7 @@ else
     fi
 fi
 
-# ------------------------------------------------------------
+ ------------------------------------------------------------
 # Update application from Git
 # ------------------------------------------------------------
 
@@ -156,67 +156,66 @@ if [ ! -d "$APP_DIR/.git" ]; then
 
 else
 
-    # Check Internet connection
-    INTERNET_AVAILABLE=false
+    echo "Waiting briefly for network..."
 
-    if command -v curl >/dev/null 2>&1; then
-        if curl --silent --head --max-time 5 https://github.com \
-            >/dev/null 2>&1; then
-            INTERNET_AVAILABLE=true
+    # Give NetworkManager/DNS some extra time during boot
+    for ((i=1; i<=15; i++)); do
+
+        if git ls-remote origin HEAD >/dev/null 2>&1; then
+            echo "Git remote is reachable."
+            break
         fi
-    fi
 
-    if [ "$INTERNET_AVAILABLE" = true ]; then
+        echo "Waiting for Git/network ($i/15)..."
+        sleep 2
 
-        echo "Internet is available."
-        echo "Updating application from Git..."
+    done
+
+    # --------------------------------------------------------
+    # Fetch latest master
+    # --------------------------------------------------------
+
+    echo "Fetching latest version from origin/master..."
+
+    if git fetch origin master; then
+
+        echo "Git fetch successful."
 
         # ----------------------------------------------------
-        # Fetch latest master branch
+        # Discard ALL local tracked changes
         # ----------------------------------------------------
 
-        if ! git fetch origin master; then
-            echo "WARNING: Git fetch failed."
-            echo "Continuing with existing application."
-        else
+        echo "Discarding local changes..."
 
-            echo "Git fetch successful."
+        if git reset --hard origin/master; then
 
-            # ------------------------------------------------
-            # Discard ALL local tracked changes
-            # ------------------------------------------------
-
-            echo "Discarding local changes..."
-
-            if ! git reset --hard origin/master; then
-                echo "ERROR: Git reset failed."
-                exit 1
-            fi
+            echo "Repository reset to origin/master."
 
             # ------------------------------------------------
-            # Remove untracked files/directories
+            # Remove untracked files
             # ------------------------------------------------
 
             echo "Removing untracked files..."
 
-            if ! git clean -fd; then
-                echo "ERROR: Git clean failed."
-                exit 1
-            fi
+            git clean -fd || \
+                echo "WARNING: git clean failed."
 
-            echo "Application successfully updated from origin/master."
+            echo "Git update completed."
 
-            # Show current commit for logging
-            echo "Current commit:"
+            echo "Running commit:"
             git log -1 --oneline
+
+        else
+
+            echo "WARNING: Git reset failed."
+            echo "Starting existing local application."
 
         fi
 
     else
 
-        echo "WARNING: Internet is not available."
-        echo "Skipping Git update."
-        echo "Starting the existing local application."
+        echo "WARNING: Git fetch failed."
+        echo "Starting existing local application."
 
     fi
 fi
