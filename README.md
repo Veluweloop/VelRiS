@@ -14,6 +14,10 @@ chmod +x start-kiosk.sh stop-kiosk.sh install.sh
 
 small update: git pull
 
+### hard update
+git fetch origin
+git reset --hard origin/main
+
 ## Systeem opbouw
 ### main.py
 
