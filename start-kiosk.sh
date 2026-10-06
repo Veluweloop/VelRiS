@@ -156,7 +156,7 @@ if [ ! -d "$APP_DIR/.git" ]; then
 
 else
 
-    # Only attempt Git operations if Internet is available
+    # Check Internet connection
     INTERNET_AVAILABLE=false
 
     if command -v curl >/dev/null 2>&1; then
@@ -171,46 +171,44 @@ else
         echo "Internet is available."
         echo "Updating application from Git..."
 
-        # Get latest information from remote
-        if git fetch origin; then
+        # ----------------------------------------------------
+        # Fetch latest master branch
+        # ----------------------------------------------------
 
-            # Determine the remote branch
-            REMOTE_BRANCH=$(git symbolic-ref --short --quiet '@{u}' 2>/dev/null || true)
-
-            if [ -z "$REMOTE_BRANCH" ]; then
-                echo "WARNING: No upstream branch configured."
-                echo "Skipping Git update."
-            else
-
-                echo "Remote branch: $REMOTE_BRANCH"
-
-                # Remove the "origin/" prefix
-                REMOTE_REF="origin/${REMOTE_BRANCH#*/}"
-
-                echo "Discarding local changes..."
-                git reset --hard "$REMOTE_REF"
-
-                if [ $? -ne 0 ]; then
-                    echo "ERROR: Could not reset repository."
-                    exit 1
-                fi
-
-                echo "Removing untracked files..."
-                git clean -fd
-
-                if [ $? -ne 0 ]; then
-                    echo "ERROR: Could not clean repository."
-                    exit 1
-                fi
-
-                echo "Application successfully updated from Git."
-
-            fi
-
-        else
-
+        if ! git fetch origin master; then
             echo "WARNING: Git fetch failed."
             echo "Continuing with existing application."
+        else
+
+            echo "Git fetch successful."
+
+            # ------------------------------------------------
+            # Discard ALL local tracked changes
+            # ------------------------------------------------
+
+            echo "Discarding local changes..."
+
+            if ! git reset --hard origin/master; then
+                echo "ERROR: Git reset failed."
+                exit 1
+            fi
+
+            # ------------------------------------------------
+            # Remove untracked files/directories
+            # ------------------------------------------------
+
+            echo "Removing untracked files..."
+
+            if ! git clean -fd; then
+                echo "ERROR: Git clean failed."
+                exit 1
+            fi
+
+            echo "Application successfully updated from origin/master."
+
+            # Show current commit for logging
+            echo "Current commit:"
+            git log -1 --oneline
 
         fi
 
