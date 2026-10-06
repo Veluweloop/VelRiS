@@ -35,6 +35,50 @@ echo "Application directory: $APP_DIR"
 echo "============================================================"
 
 # ------------------------------------------------------------
+# Update application from Git
+# ------------------------------------------------------------
+
+echo "Updating application from Git..."
+
+cd "$APP_DIR" || {
+    echo "ERROR: Could not enter application directory."
+    exit 1
+}
+
+# Make sure this is a Git repository
+if [ ! -d "$APP_DIR/.git" ]; then
+    echo "ERROR: $APP_DIR is not a Git repository."
+    exit 1
+fi
+
+# Fetch latest changes
+git fetch origin
+
+# Check whether local branch is behind
+LOCAL=$(git rev-parse HEAD)
+REMOTE=$(git rev-parse "@{u}" 2>/dev/null || true)
+
+if [ -z "$REMOTE" ]; then
+    echo "WARNING: No upstream branch configured."
+else
+    if [ "$LOCAL" = "$REMOTE" ]; then
+        echo "Application is already up to date."
+    else
+        echo "New version available."
+        echo "Pulling latest changes..."
+
+        git pull --ff-only
+
+        if [ $? -ne 0 ]; then
+            echo "ERROR: Git pull failed."
+            exit 1
+        fi
+
+        echo "Git update completed."
+    fi
+fi
+
+# ------------------------------------------------------------
 # Basic checks
 # ------------------------------------------------------------
 
