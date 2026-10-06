@@ -9,6 +9,9 @@ set -u
 APP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 VENV_DIR="$APP_DIR/.venv"
 
+WIFI_SSID="Veluweloop"
+WIFI_PASSWORD="Veluwelopen01"
+
 PYTHON="$VENV_DIR/bin/python"
 APP="$APP_DIR/main.py"
 
@@ -33,6 +36,51 @@ echo "============================================================"
 echo "Kiosk startup: $(date)"
 echo "Application directory: $APP_DIR"
 echo "============================================================"
+
+# ------------------------------------------------------------
+# Connect to Wi-Fi
+# ------------------------------------------------------------
+
+echo "Checking Wi-Fi connection..."
+
+if ! command -v nmcli >/dev/null 2>&1; then
+    echo "ERROR: nmcli is not installed."
+    exit 1
+fi
+
+# Check current connection
+CURRENT_WIFI=$(nmcli -t -f ACTIVE,SSID dev wifi | grep '^yes:' | cut -d: -f2- || true)
+
+if [ "$CURRENT_WIFI" = "$WIFI_SSID" ]; then
+    echo "Already connected to Wi-Fi: $WIFI_SSID"
+else
+    echo "Connecting to Wi-Fi: $WIFI_SSID..."
+
+    nmcli device wifi connect "$WIFI_SSID" password "$WIFI_PASSWORD"
+
+    if [ $? -ne 0 ]; then
+        echo "ERROR: Could not connect to Wi-Fi."
+        exit 1
+    fi
+fi
+
+echo "Waiting for network..."
+
+MAX_WIFI_ATTEMPTS=30
+WIFI_ATTEMPT=0
+
+while ! nmcli networking connectivity check 2>/dev/null | grep -qE 'full|limited'; do
+    WIFI_ATTEMPT=$((WIFI_ATTEMPT + 1))
+
+    if [ "$WIFI_ATTEMPT" -ge "$MAX_WIFI_ATTEMPTS" ]; then
+        echo "ERROR: Network did not become available."
+        exit 1
+    fi
+
+    sleep 1
+done
+
+echo "Network is available."
 
 # ------------------------------------------------------------
 # Update application from Git
