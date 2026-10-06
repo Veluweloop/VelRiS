@@ -9,9 +9,6 @@ set -u
 APP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 VENV_DIR="$APP_DIR/.venv"
 
-WIFI_SSID="Veluweloop"
-WIFI_PASSWORD="Veluwelopen01"
-
 PYTHON="$VENV_DIR/bin/python"
 APP="$APP_DIR/main.py"
 
@@ -22,6 +19,16 @@ URL="http://${HOST}:${PORT}/"
 LOG_DIR="$APP_DIR/logs"
 APP_LOG="$LOG_DIR/app.log"
 START_LOG="$LOG_DIR/startup.log"
+
+# ------------------------------------------------------------
+# Wi-Fi Configuration
+# ------------------------------------------------------------
+
+WIFI_SSID="YourWiFiName"
+WIFI_PASSWORD="YourWiFiPassword"
+
+# How long to wait for Wi-Fi to become available
+WIFI_MAX_ATTEMPTS=30
 
 # ------------------------------------------------------------
 # Logging
@@ -41,52 +48,101 @@ echo "============================================================"
 # Connect to Wi-Fi
 # ------------------------------------------------------------
 
-echo "Checking Wi-Fi connection..."
+echo "Checking Wi-Fi..."
 
 if ! command -v nmcli >/dev/null 2>&1; then
-    echo "ERROR: nmcli is not installed."
-    exit 1
-fi
-
-# Check current connection
-CURRENT_WIFI=$(nmcli -t -f ACTIVE,SSID dev wifi | grep '^yes:' | cut -d: -f2- || true)
-
-if [ "$CURRENT_WIFI" = "$WIFI_SSID" ]; then
-    echo "Already connected to Wi-Fi: $WIFI_SSID"
+    echo "WARNING: nmcli is not installed."
+    echo "Continuing without Wi-Fi."
 else
-    echo "Connecting to Wi-Fi: $WIFI_SSID..."
 
-    nmcli device wifi connect "$WIFI_SSID" password "$WIFI_PASSWORD"
+    WIFI_CONNECTED=false
 
-    if [ $? -ne 0 ]; then
-        echo "ERROR: Could not connect to Wi-Fi."
-        exit 1
+    # First check if already connected to the requested Wi-Fi
+    CURRENT_WIFI=$(nmcli -t -f ACTIVE,SSID dev wifi 2>/dev/null \
+        | grep '^yes:' \
+        | cut -d: -f2- || true)
+
+    if [ "$CURRENT_WIFI" = "$WIFI_SSID" ]; then
+        echo "Already connected to Wi-Fi: $WIFI_SSID"
+        WIFI_CONNECTED=true
+    else
+        echo "Wi-Fi is not currently connected to $WIFI_SSID."
+
+        # Give the Wi-Fi adapter some time to initialize
+        for ((i=1; i<=WIFI_MAX_ATTEMPTS; i++)); do
+
+            echo "Wi-Fi attempt $i/$WIFI_MAX_ATTEMPTS..."
+
+            # Refresh the Wi-Fi scan
+            nmcli device wifi rescan >/dev/null 2>&1 || true
+
+            # Check whether our SSID is visible
+            if nmcli -t -f SSID device wifi list 2>/dev/null \
+                | grep -Fxq "$WIFI_SSID"; then
+
+                echo "Found Wi-Fi network: $WIFI_SSID"
+                break
+            fi
+
+            if [ "$i" -eq "$WIFI_MAX_ATTEMPTS" ]; then
+                echo "WARNING: Wi-Fi network '$WIFI_SSID' was not found."
+                echo "Continuing without Wi-Fi."
+                break
+            fi
+
+            sleep 2
+        done
+
+        # Try connecting if the network was found
+        if nmcli -t -f SSID device wifi list 2>/dev/null \
+            | grep -Fxq "$WIFI_SSID"; then
+
+            echo "Connecting to Wi-Fi: $WIFI_SSID..."
+
+            if nmcli device wifi connect "$WIFI_SSID" \
+                password "$WIFI_PASSWORD"; then
+
+                echo "Wi-Fi connection successful."
+                WIFI_CONNECTED=true
+
+            else
+                echo "WARNING: Could not connect to Wi-Fi."
+                echo "Continuing without Wi-Fi."
+            fi
+        fi
+    fi
+
+    if [ "$WIFI_CONNECTED" = true ]; then
+        echo "Wi-Fi is available."
+
+        # Give NetworkManager a moment to establish Internet access
+        echo "Checking Internet connectivity..."
+
+        for ((i=1; i<=10; i++)); do
+            CONNECTIVITY=$(nmcli networking connectivity check 2>/dev/null || true)
+
+            if [ "$CONNECTIVITY" = "full" ]; then
+                echo "Internet connection is available."
+                break
+            fi
+
+            echo "Waiting for Internet connection ($i/10)..."
+            sleep 1
+        done
+
+        CONNECTIVITY=$(nmcli networking connectivity check 2>/dev/null || true)
+
+        if [ "$CONNECTIVITY" != "full" ]; then
+            echo "WARNING: Wi-Fi is connected, but Internet is not available."
+        fi
     fi
 fi
-
-echo "Waiting for network..."
-
-MAX_WIFI_ATTEMPTS=30
-WIFI_ATTEMPT=0
-
-while ! nmcli networking connectivity check 2>/dev/null | grep -qE 'full|limited'; do
-    WIFI_ATTEMPT=$((WIFI_ATTEMPT + 1))
-
-    if [ "$WIFI_ATTEMPT" -ge "$MAX_WIFI_ATTEMPTS" ]; then
-        echo "ERROR: Network did not become available."
-        exit 1
-    fi
-
-    sleep 1
-done
-
-echo "Network is available."
 
 # ------------------------------------------------------------
 # Update application from Git
 # ------------------------------------------------------------
 
-echo "Updating application from Git..."
+echo "Checking for application updates..."
 
 cd "$APP_DIR" || {
     echo "ERROR: Could not enter application directory."
@@ -95,34 +151,63 @@ cd "$APP_DIR" || {
 
 # Make sure this is a Git repository
 if [ ! -d "$APP_DIR/.git" ]; then
-    echo "ERROR: $APP_DIR is not a Git repository."
-    exit 1
-fi
-
-# Fetch latest changes
-git fetch origin
-
-# Check whether local branch is behind
-LOCAL=$(git rev-parse HEAD)
-REMOTE=$(git rev-parse "@{u}" 2>/dev/null || true)
-
-if [ -z "$REMOTE" ]; then
-    echo "WARNING: No upstream branch configured."
+    echo "WARNING: $APP_DIR is not a Git repository."
+    echo "Skipping Git update."
 else
-    if [ "$LOCAL" = "$REMOTE" ]; then
-        echo "Application is already up to date."
-    else
-        echo "New version available."
-        echo "Pulling latest changes..."
 
-        git pull --ff-only
+    # Only attempt Git operations if Internet appears available
+    INTERNET_AVAILABLE=false
 
-        if [ $? -ne 0 ]; then
-            echo "ERROR: Git pull failed."
-            exit 1
+    if command -v curl >/dev/null 2>&1; then
+        if curl --silent --head --max-time 5 https://github.com \
+            >/dev/null 2>&1; then
+            INTERNET_AVAILABLE=true
+        fi
+    fi
+
+    if [ "$INTERNET_AVAILABLE" = true ]; then
+
+        echo "Internet is available."
+        echo "Updating application from Git..."
+
+        if git fetch origin; then
+
+            LOCAL=$(git rev-parse HEAD)
+            REMOTE=$(git rev-parse "@{u}" 2>/dev/null || true)
+
+            if [ -z "$REMOTE" ]; then
+
+                echo "WARNING: No upstream branch configured."
+                echo "Skipping automatic pull."
+
+            elif [ "$LOCAL" = "$REMOTE" ]; then
+
+                echo "Application is already up to date."
+
+            else
+
+                echo "New version available."
+                echo "Pulling latest changes..."
+
+                if git pull --ff-only; then
+                    echo "Git update completed."
+                else
+                    echo "WARNING: Git pull failed."
+                    echo "Continuing with existing application."
+                fi
+            fi
+
+        else
+            echo "WARNING: Git fetch failed."
+            echo "Continuing with existing application."
         fi
 
-        echo "Git update completed."
+    else
+
+        echo "WARNING: Internet is not available."
+        echo "Skipping Git update."
+        echo "Starting the existing local application."
+
     fi
 fi
 
@@ -147,14 +232,18 @@ fi
 # ------------------------------------------------------------
 
 if pgrep -f "$APP" >/dev/null 2>&1; then
+
     echo "Application is already running."
+
 else
+
     echo "Starting Python application..."
 
     nohup "$PYTHON" "$APP" >> "$APP_LOG" 2>&1 &
     APP_PID=$!
 
     echo "Python PID: $APP_PID"
+
 fi
 
 # ------------------------------------------------------------
@@ -167,6 +256,7 @@ MAX_ATTEMPTS=60
 ATTEMPT=0
 
 while ! curl --silent --output /dev/null --fail "$URL"; do
+
     ATTEMPT=$((ATTEMPT + 1))
 
     if [ "$ATTEMPT" -ge "$MAX_ATTEMPTS" ]; then
@@ -177,39 +267,47 @@ while ! curl --silent --output /dev/null --fail "$URL"; do
     fi
 
     sleep 1
+
 done
 
 echo "Application is ready."
 
 # ------------------------------------------------------------
-# Close any existing Firefox instance
+# Check Firefox
 # ------------------------------------------------------------
 
 echo "Checking Firefox..."
 
 if pgrep -x firefox >/dev/null 2>&1; then
+
     echo "Firefox is already running."
 
-    # Don't forcibly kill an existing user's Firefox session.
-    # Firefox may already be using the profile we need.
 else
+
     echo "No existing Firefox process."
+
+    # --------------------------------------------------------
+    # Start Firefox kiosk
+    # --------------------------------------------------------
+
+    echo "Starting Firefox kiosk..."
+
+    firefox \
+        --kiosk \
+        "$URL" \
+        >/dev/null 2>&1 &
+
+    FIREFOX_PID=$!
+
+    echo "Firefox PID: $FIREFOX_PID"
+
 fi
 
 # ------------------------------------------------------------
-# Start Firefox kiosk
+# Startup complete
 # ------------------------------------------------------------
 
-echo "Starting Firefox kiosk..."
-
-firefox \
-    --kiosk \
-    "$URL" \
-    >/dev/null 2>&1 &
-
-FIREFOX_PID=$!
-
-echo "Firefox PID: $FIREFOX_PID"
 echo "Kiosk startup complete."
+echo "Startup finished: $(date)"
 
 exit 0
