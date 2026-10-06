@@ -149,13 +149,14 @@ cd "$APP_DIR" || {
     exit 1
 }
 
-# Make sure this is a Git repository
 if [ ! -d "$APP_DIR/.git" ]; then
+
     echo "WARNING: $APP_DIR is not a Git repository."
     echo "Skipping Git update."
+
 else
 
-    # Only attempt Git operations if Internet appears available
+    # Only attempt Git operations if Internet is available
     INTERNET_AVAILABLE=false
 
     if command -v curl >/dev/null 2>&1; then
@@ -170,36 +171,47 @@ else
         echo "Internet is available."
         echo "Updating application from Git..."
 
+        # Get latest information from remote
         if git fetch origin; then
 
-            LOCAL=$(git rev-parse HEAD)
-            REMOTE=$(git rev-parse "@{u}" 2>/dev/null || true)
+            # Determine the remote branch
+            REMOTE_BRANCH=$(git symbolic-ref --short --quiet '@{u}' 2>/dev/null || true)
 
-            if [ -z "$REMOTE" ]; then
-
+            if [ -z "$REMOTE_BRANCH" ]; then
                 echo "WARNING: No upstream branch configured."
-                echo "Skipping automatic pull."
-
-            elif [ "$LOCAL" = "$REMOTE" ]; then
-
-                echo "Application is already up to date."
-
+                echo "Skipping Git update."
             else
 
-                echo "New version available."
-                echo "Pulling latest changes..."
+                echo "Remote branch: $REMOTE_BRANCH"
 
-                if git pull --ff-only; then
-                    echo "Git update completed."
-                else
-                    echo "WARNING: Git pull failed."
-                    echo "Continuing with existing application."
+                # Remove the "origin/" prefix
+                REMOTE_REF="origin/${REMOTE_BRANCH#*/}"
+
+                echo "Discarding local changes..."
+                git reset --hard "$REMOTE_REF"
+
+                if [ $? -ne 0 ]; then
+                    echo "ERROR: Could not reset repository."
+                    exit 1
                 fi
+
+                echo "Removing untracked files..."
+                git clean -fd
+
+                if [ $? -ne 0 ]; then
+                    echo "ERROR: Could not clean repository."
+                    exit 1
+                fi
+
+                echo "Application successfully updated from Git."
+
             fi
 
         else
+
             echo "WARNING: Git fetch failed."
             echo "Continuing with existing application."
+
         fi
 
     else
