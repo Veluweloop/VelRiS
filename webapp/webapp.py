@@ -206,7 +206,7 @@ def instellingen():
         "ETAPPE_VOLGNUMMER": helper_database.get_instelling('ETAPPE_VOLGNUMMER'),
         "ETAPPE_NAAM": helper_database.get_instelling('WISSELPUNT_NAAM'),
         "checkpointteam": helper_database.get_instelling('checkpointteam'),
-        "checkpointteam_list": ["wppA", "wppB", "wppC", "wppD"],
+        "checkpointteam_list": ["wppA", "wppB", "wppC", "wppD", "Lucas", "Joep", "Nood-E", "Nood-F"],
         "ETAPPE_LIST": helper_database.get_wisselpunten(evenement_id)
     }
 
