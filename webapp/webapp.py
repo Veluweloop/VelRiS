@@ -52,7 +52,7 @@ def invoerendoorkomst():
     title = "Doorkomst"
 
     if request.method == 'POST':
-        ploegNummer = request.form['team_insert']
+        ploegNummer = request.form['team_insert'] or 0
         datetime_current = datetime.datetime.now().astimezone().replace(microsecond=0).isoformat() #current system datetime
         evenement_id = helper_database.get_instelling('EVENEMENT_ID')
         etappeVolgnummer = helper_database.get_instelling('ETAPPE_VOLGNUMMER')
